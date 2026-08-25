@@ -269,6 +269,15 @@
   .warn{background:#FFF3D6;border:1.5px solid var(--sun);color:#7A5A16;font-weight:700;
     padding:10px 14px;border-radius:14px;font-size:13px;margin-bottom:12px}
 
+  /* ---------- pages ---------- */
+  .pages{min-width:0}
+  .page{display:none}
+  .page.on{display:flex;flex-direction:column;gap:16px;
+    animation:pagein .28s cubic-bezier(.2,.8,.2,1)}
+  @keyframes pagein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.page.on{animation:none}}
+  .rail-end{margin-top:auto}
+
   /* ---------- design page ---------- */
   .lede{margin:0 0 16px;font-size:14.5px;font-weight:600;color:var(--ink-2);max-width:56ch}
   .sub-h{margin:22px 0 10px;font-family:var(--f-display);font-weight:600;font-size:15px}
@@ -322,26 +331,26 @@
     <div class="logo-dot" aria-hidden="true">
       <svg viewBox="0 0 24 24"><path d="M12 3l7 4v10l-7 4-7-4V7z"/><path d="M12 3v18"/></svg>
     </div>
-    <button class="rbtn" aria-current="true" aria-label="Dashboard">
+    <button class="rbtn" data-page="home" aria-current="true" aria-label="Overview" title="Overview">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
     </button>
-    <button class="rbtn" data-goto="quests" aria-label="Quests">
+    <button class="rbtn" data-page="quests" aria-label="Quests" title="Quests">
       <svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 012 2v16l-7-4-7 4V5a2 2 0 012-2z"/></svg>
     </button>
-    <button class="rbtn" data-goto="week" aria-label="Progress">
+    <button class="rbtn" data-page="progress" aria-label="Progress" title="Progress">
       <svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M20 19H4"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-3"/></svg>
     </button>
-    <button class="rbtn" data-goto="kpis" aria-label="Records">
+    <button class="rbtn" data-page="records" aria-label="Records" title="Records">
       <svg viewBox="0 0 24 24"><path d="M6 3h12v5a6 6 0 01-12 0z"/><path d="M9 21h6"/><path d="M12 14v7"/></svg>
     </button>
-    <button class="rbtn" data-goto="top" aria-label="Top activities">
+    <button class="rbtn" data-page="activities" aria-label="Activities" title="Activities">
       <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0"/><path d="M16 11a3 3 0 100-6"/><path d="M18 20a6 6 0 00-3-5.2"/></svg>
     </button>
-    <button class="rbtn" id="themeBtn" aria-label="Switch theme">
-      <svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4 8.5 8.5 0 1020 14.5z"/></svg>
-    </button>
-    <button class="rbtn" id="designBtn" aria-label="Design">
+    <button class="rbtn" data-page="design" aria-label="Design" title="Design">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+    </button>
+    <button class="rbtn rail-end" id="themeBtn" aria-label="Switch theme" title="Light / dark">
+      <svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4 8.5 8.5 0 1020 14.5z"/></svg>
     </button>
   </nav>
 
@@ -380,7 +389,7 @@
         <input type="search" id="q" placeholder="Search quests" aria-label="Search quests">
       </div>
       <div class="tb-right">
-        <button class="iconbtn" id="undoBtn" aria-label="Undo last entry">
+        <button class="iconbtn" id="undoBtn" aria-label="Undo last entry" title="Undo last entry">
           <svg viewBox="0 0 24 24"><path d="M3 10h11a5 5 0 010 10h-3"/><path d="M7 6l-4 4 4 4"/></svg>
         </button>
         <button class="iconbtn bell" id="streakBtn" aria-label="Streak">
@@ -402,66 +411,88 @@
       <div class="totalxp"><span id="totalXp">0</span> XP</div>
     </section>
 
-    <div class="grid">
-      <section class="card" id="overview">
-        <h3><span class="emo">🧭</span>Character Overview</h3>
-        <div class="ovwrap">
-          <svg class="radar" viewBox="0 0 260 250" id="radar" aria-label="Stat pentagon"></svg>
-          <div class="statlist" id="stats"></div>
-        </div>
-      </section>
+    <div class="pages">
 
-      <section class="card" id="quests">
-        <h3><span class="emo">📜</span>Daily Quest Log</h3>
-        <div class="tabs" id="tabs" role="tablist"></div>
-        <div id="questList"></div>
-        <div class="newq">
-          <input type="text" id="qName" placeholder="Your own quest" maxlength="28">
-          <select id="qStat" aria-label="Stat"></select>
-          <input type="number" id="qXp" value="15" min="1" max="200" aria-label="XP">
-          <button id="qAdd">Add</button>
-        </div>
-      </section>
+      <div class="page on" data-page="home">
+        <section class="card" id="overview">
+          <h3><span class="emo">🧭</span>Character Overview</h3>
+          <div class="ovwrap">
+            <svg class="radar" viewBox="0 0 260 250" id="radar" aria-label="Stat pentagon"></svg>
+            <div class="statlist" id="stats"></div>
+          </div>
+        </section>
+        <section class="card">
+          <h3><span class="emo">☀️</span>Today</h3>
+          <div class="kpis" id="todayGrid"></div>
+        </section>
+      </div>
+
+      <div class="page" data-page="quests">
+        <section class="card">
+          <h3><span class="emo">📜</span>Daily Quest Log</h3>
+          <div class="tabs" id="tabs" role="tablist"></div>
+          <div id="questList"></div>
+          <div class="newq">
+            <input type="text" id="qName" placeholder="Your own quest" maxlength="28">
+            <select id="qStat" aria-label="Stat"></select>
+            <input type="number" id="qXp" value="15" min="1" max="200" aria-label="XP">
+            <button id="qAdd">Add</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="page" data-page="progress">
+        <section class="card">
+          <h3><span class="emo">📈</span>Past 7 Days</h3>
+          <div class="week" id="weekChart"></div>
+        </section>
+      </div>
+
+      <div class="page" data-page="records">
+        <section class="card">
+          <h3><span class="emo">🏅</span>Key Performance Indicators</h3>
+          <div class="kpis" id="kpiGrid"></div>
+        </section>
+        <section class="card">
+          <h3><span class="emo">🗄️</span>Your Data</h3>
+          <p class="lede">Everything is stored in this browser only — nothing leaves your machine.</p>
+          <div class="foot">
+            <button class="ghost" id="undo2">Undo last entry</button>
+            <button class="ghost" id="reset2">Reset everything</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="page" data-page="activities">
+        <section class="card">
+          <h3><span class="emo">✨</span>Top Activities</h3>
+          <div class="toplist" id="topList"></div>
+        </section>
+      </div>
+
+      <div class="page" data-page="design">
+        <section class="card">
+          <h3><span class="emo">🎨</span>Design</h3>
+          <p class="lede">Pick a look. It changes the whole page and the little world
+            your character stands in.</p>
+          <div class="themes" id="themeGrid"></div>
+
+          <h4 class="sub-h">Appearance</h4>
+          <div class="segs" id="modeSegs">
+            <button data-mode="light">Light</button>
+            <button data-mode="dark">Dark</button>
+            <button data-mode="system">System</button>
+          </div>
+
+          <h4 class="sub-h">Motion</h4>
+          <div class="segs" id="spinSegs">
+            <button data-spin="on">Turntable on</button>
+            <button data-spin="off">Hold still</button>
+          </div>
+        </section>
+      </div>
+
     </div>
-
-    <div class="sub">
-      <section class="card" id="week">
-        <h3><span class="emo">📈</span>Past 7 Days</h3>
-        <div class="week" id="weekChart"></div>
-      </section>
-      <section class="card" id="kpis">
-        <h3><span class="emo">🏅</span>KPIs</h3>
-        <div class="kpis" id="kpiGrid"></div>
-      </section>
-    </div>
-
-    <section class="card" id="design" hidden>
-      <h3><span class="emo">🎨</span>Design</h3>
-      <p class="lede">Pick a look. It changes the whole page and the little world
-        your character stands in.</p>
-      <div class="themes" id="themeGrid"></div>
-
-      <h4 class="sub-h">Appearance</h4>
-      <div class="segs" id="modeSegs">
-        <button data-mode="light">Light</button>
-        <button data-mode="dark">Dark</button>
-        <button data-mode="system">System</button>
-      </div>
-
-      <h4 class="sub-h">Motion</h4>
-      <div class="segs" id="spinSegs">
-        <button data-spin="on">Turntable on</button>
-        <button data-spin="off">Hold still</button>
-      </div>
-    </section>
-    <section class="card" id="top">
-      <h3><span class="emo">✨</span>Top Activities</h3>
-      <div class="toplist" id="topList"></div>
-      <div class="foot">
-        <button class="ghost" id="undo2">Undo last entry</button>
-        <button class="ghost" id="reset2">Reset everything</button>
-      </div>
-    </section>
   </main>
 </div>
 
@@ -1189,15 +1220,26 @@ function initCharacter(){
     geo.attributes.color.needsUpdate=true;
   }
 
-  /* a rough pass appears almost at once, then the fine mesh replaces it */
+  /* A rough pass appears almost at once, then the fine mesh replaces it.
+     Driven by rAF *and* a timer, so a throttled or hidden tab still finishes. */
   (function(){
     function* all(){ yield* buildAt(0.044); yield; yield* buildAt(0.021); }
     const it=all();
-    const pump=()=>{ const t0=performance.now();
-      let r; do{ r=it.next(); }while(!r.done && performance.now()-t0<11);
-      if(!r.done) requestAnimationFrame(pump);
+    let token=0;
+    const schedule=()=>{
+      const mine=++token;
+      const run=()=>{ if(mine!==token) return; step(); };
+      requestAnimationFrame(run);
+      setTimeout(run,40);
     };
-    requestAnimationFrame(pump);
+    const step=()=>{
+      const t0=performance.now();
+      let r;
+      try{ do{ r=it.next(); }while(!r.done && performance.now()-t0<11); }
+      catch(e){ console.error("character build failed",e); return; }
+      if(!r.done) schedule();
+    };
+    schedule();
   })();
   let rot=0, target=0, drag=false, lastX=0, touched=false;
   const norm=a=>((a%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
@@ -1522,6 +1564,21 @@ function renderRadar(){
   }
 }
 
+
+function renderToday(){
+  const t=today(), mine=state.log.filter(l=>l.d===t);
+  const xp=mine.reduce((a,b)=>a+b.xp,0);
+  const by={}; mine.forEach(l=>by[l.stat]=(by[l.stat]||0)+l.xp);
+  const top=Object.keys(by).sort((a,b)=>by[b]-by[a])[0];
+  const pct=Math.min(100,Math.round(xp/DAILY_GOAL*100));
+  todayGrid.innerHTML=[
+    [xp+" / "+DAILY_GOAL,"XP today"],
+    [pct+"%","of daily goal"],
+    [mine.length,"quests done"],
+    [top?STATS[top].emo+" "+top:"—","trained most"]
+  ].map(([v,l])=>`<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join("");
+}
+
 function renderQuests(){
   tabs.innerHTML=KEYS.map(k=>{
     const on=k===tab;
@@ -1589,7 +1646,8 @@ function renderTop(){
         <span class="c" style="color:${sc(o.stat)}">×${o.n}</span></div>`).join("")
     : `<div class="empty">Nothing logged yet — tick a quest to begin.</div>`;
 }
-function renderAll(){ renderLevel(); renderRadar(); renderQuests(); renderWeek(); renderKpis(); renderTop(); }
+function renderAll(){ renderLevel(); renderRadar(); renderToday(); renderQuests();
+  renderWeek(); renderKpis(); renderTop(); }
 
 /* ---------- feedback ---------- */
 const STILL = matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -1639,21 +1697,35 @@ tabs.addEventListener("click",e=>{const b=e.target.closest(".tab"); if(!b)return
   tab=b.dataset.k; filter=""; q.value=""; renderQuests();});
 questList.addEventListener("click",e=>{const b=e.target.closest(".tick"); if(!b)return;
   const item=allQuests().find(x=>x.id===b.dataset.q); if(item) logQuest(item,b);});
-q.addEventListener("input",()=>{ filter=q.value; renderQuests(); });
+q.addEventListener("input",()=>{ filter=q.value; renderQuests();
+  if(filter && page!=="quests") showPage("quests"); });
 themeBtn.addEventListener("click",()=>{
   mode = currentMode()==="dark" ? "light" : "dark";
   applyDesign(); renderAll(); saveDesign();
 });
 
-/* ---------- design page ---------- */
-const showDesign=(on)=>{
-  document.getElementById("design").hidden=!on;
-  document.querySelectorAll("main > .grid, main > .sub, main > #top, main > .levelrow")
-    .forEach(el=>el.hidden=on);
-  designBtn.setAttribute("aria-current",on?"true":"false");
-  if(on) document.getElementById("design").scrollIntoView({block:"start"});
-};
-designBtn.addEventListener("click",()=>showDesign(document.getElementById("design").hidden));
+/* ---------- pages ---------- */
+const PAGE_TITLE={home:"Overview",quests:"Quests",progress:"Progress",
+  records:"Records",activities:"Activities",design:"Design"};
+let page="home";
+function showPage(name){
+  if(!PAGE_TITLE[name]) name="home";
+  page=name;
+  document.querySelectorAll(".page").forEach(p=>
+    p.classList.toggle("on", p.dataset.page===name));
+  document.querySelectorAll(".rbtn[data-page]").forEach(b=>
+    b.setAttribute("aria-current", b.dataset.page===name ? "true":"false"));
+  document.title = name==="home" ? "LIFE:RPG" : "LIFE:RPG · "+PAGE_TITLE[name];
+  /* stacked layout puts the character above the content, so jump to the content */
+  if(matchMedia("(max-width:900px)").matches)
+    document.querySelector("main").scrollIntoView({block:"start",
+      behavior:STILL?"auto":"smooth"});
+  else document.scrollingElement.scrollTop=0;
+  if(name==="quests") setTimeout(()=>q.focus({preventScroll:true}),0);
+}
+document.querySelectorAll(".rbtn[data-page]").forEach(b=>
+  b.addEventListener("click",()=>showPage(b.dataset.page)));
+
 themeGrid.addEventListener("click",e=>{ const b=e.target.closest(".theme"); if(!b) return;
   themeName=b.dataset.t; applyDesign(); renderAll(); saveDesign();
   toast(THEMES[themeName].name+" applied");
@@ -1696,10 +1768,6 @@ avatarBtn.addEventListener("click",()=>{
   const {lv,rest,need:n}=levelOf(state.xp);
   toast(`Lv.${lv} · ${rest} / ${n} XP to next`);
 });
-[...document.querySelectorAll(".rbtn[data-goto]")].forEach(b=>b.addEventListener("click",()=>{
-  const t=document.getElementById(b.dataset.goto);
-  if(t) t.scrollIntoView({behavior:STILL?"auto":"smooth",block:"start"});
-}));
 
 qStat.innerHTML=KEYS.map(k=>`<option value="${k}">${STATS[k].emo} ${STATS[k].name}</option>`).join("");
 
