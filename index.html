@@ -1,573 +1,1394 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LIFE:RPG — Level up in real life</title>
+<title>LIFE:RPG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#FFFFFF; --panel:rgba(255,255,255,.86); --panel-2:rgba(255,255,255,.72);
-    --line:rgba(30,40,90,.13); --grid:rgba(30,35,80,.14); --grid-strong:rgba(30,35,80,.26);
-    --text:#171A33; --muted:#5F638C;
-    --gold:#C97B12; --gold-soft:rgba(201,123,18,.16); --on-gold:#FFF6E6;
-    --fill:rgba(30,35,80,.05); --fill-2:rgba(30,35,80,.10);
-    --shadow:0 1px 2px rgba(20,25,60,.04), 0 6px 16px rgba(20,25,60,.06), 0 24px 48px rgba(20,25,60,.07);
-    --int:#1E6FC4; --vit:#C93F26; --exp:#0A8460; --soc:#6B37D8; --cre:#A56D00;
+    --sky-1:#B6ECD6; --sky-2:#8FDCEA; --sky-3:#7FD3E8;
+    --panel:#D6F3E2; --panel-2:#EAFBF1;
+    --card:#FFFFFF; --card-2:#F2FCF6;
+    --ink:#22463F; --ink-2:#3E6B62; --muted:#6E9990;
+    --line:rgba(34,70,63,.10); --line-2:rgba(34,70,63,.16);
+    --teal:#2FBFA8; --teal-d:#1FA791; --mint:#7FE0C6;
+    --coral:#FF8FA3; --sun:#FFC94D; --lilac:#A99CF0; --sea:#6FC9E8;
+    --ok:#3FC79E;
+    --shadow-s:0 1px 2px rgba(24,72,64,.06), 0 4px 12px rgba(24,72,64,.07);
+    --shadow-m:0 2px 4px rgba(24,72,64,.06), 0 10px 26px rgba(24,72,64,.10);
+    --shadow-l:0 6px 16px rgba(24,72,64,.10), 0 22px 48px rgba(24,72,64,.14);
+    --r-l:26px; --r-m:18px; --r-s:13px;
+    --f-display:"Fredoka",system-ui,sans-serif;
+    --f-body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --s1:#2FBFA8; --s2:#6FA8F5; --s3:#FF9E7A; --s4:#C08BF0; --s5:#FFC24D;
   }
-  [data-theme="dark"]{
-    --bg:#0F0C22; --panel:rgba(24,20,54,.78); --panel-2:rgba(28,24,62,.66);
-    --line:rgba(255,255,255,.14); --grid:rgba(255,255,255,.11); --grid-strong:rgba(255,255,255,.24);
-    --text:#F1EEFF; --muted:#9C96C8;
-    --gold:#FFCF6E; --gold-soft:rgba(255,207,110,.14); --on-gold:#1A1330;
-    --fill:rgba(255,255,255,.06); --fill-2:rgba(255,255,255,.12);
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 18px 50px rgba(0,0,0,.42);
-    --int:#8ACBFF; --vit:#FF8E75; --exp:#6BE9B6; --soc:#CBA6FF; --cre:#FFD97A;
+  :root[data-theme="dark"]{
+    --sky-1:#12332F; --sky-2:#123A44; --sky-3:#0E2F3B;
+    --panel:#173C38; --panel-2:#12332F;
+    --card:#1B4440; --card-2:#173B38;
+    --ink:#E6FBF3; --ink-2:#B7DDD3; --muted:#7FAFA5;
+    --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.16);
+    --shadow-s:0 1px 2px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.28);
+    --shadow-m:0 2px 4px rgba(0,0,0,.3), 0 12px 28px rgba(0,0,0,.34);
+    --shadow-l:0 8px 20px rgba(0,0,0,.36), 0 24px 52px rgba(0,0,0,.42);
   }
-  :root{
-    --mono: ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
-    --sans: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  /* system dark, for anyone who has not picked a side yet */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+    --sky-1:#12332F; --sky-2:#123A44; --sky-3:#0E2F3B;
+    --panel:#173C38; --panel-2:#12332F;
+    --card:#1B4440; --card-2:#173B38;
+    --ink:#E6FBF3; --ink-2:#B7DDD3; --muted:#7FAFA5;
+    --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.16);
+    --shadow-s:0 1px 2px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.28);
+    --shadow-m:0 2px 4px rgba(0,0,0,.3), 0 12px 28px rgba(0,0,0,.34);
+    --shadow-l:0 8px 20px rgba(0,0,0,.36), 0 24px 52px rgba(0,0,0,.42);
+    }
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none !important}
   html,body{margin:0;padding:0}
   body{
-    background:var(--bg); color:var(--text); font-family:var(--sans); font-weight:500;
-    min-height:100vh; padding:20px 16px calc(48px + env(safe-area-inset-bottom));
-    -webkit-font-smoothing:antialiased; transition:background-color .25s,color .25s;
+    font-family:var(--f-body); font-weight:600; color:var(--ink);
+    background-color:var(--sky-1);
+    background-image:
+      radial-gradient(1200px 600px at 88% -8%, var(--sky-3) 0%, transparent 60%),
+      linear-gradient(135deg, var(--sky-1) 0%, var(--sky-2) 100%);
+    background-repeat:no-repeat;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+    font-variant-numeric:tabular-nums;
   }
-  .wrap{max-width:1020px;margin:0 auto;position:relative}
-
-  header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-  .brand{display:flex;align-items:center;gap:11px}
-  .mark{width:38px;height:38px;border-radius:12px;flex:0 0 38px;display:grid;place-items:center;
-    background:linear-gradient(150deg,var(--gold),#FF8E75 55%,#7C4DEC);color:#fff;
-    font-family:var(--mono);font-weight:800;font-size:15px;letter-spacing:-.03em;
-    box-shadow:0 6px 16px rgba(201,123,18,.25)}
-  .logo{font-size:19px;font-weight:800;letter-spacing:.16em;font-family:var(--mono)}
-  .logo b{color:var(--gold)}
-  .tagline{color:var(--muted);font-size:12.5px;font-weight:500;margin-top:3px}
-  .hd-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-  .streak{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--gold);white-space:nowrap;
-    border:1px solid var(--line);border-radius:999px;padding:7px 13px;background:var(--gold-soft)}
-  .theme-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);
-    border-radius:999px;width:40px;height:38px;font-size:16px;cursor:pointer;box-shadow:var(--shadow)}
-
-  .grid{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
-  .card{position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--line);
-    border-radius:20px;padding:20px;box-shadow:var(--shadow);
-    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-  .card > *{position:relative;z-index:1}
-  .card canvas.fx{position:absolute;inset:0;width:100%;height:100%;z-index:0;
-    pointer-events:none;display:block}
-
-  .lvrow{display:flex;align-items:center;gap:14px}
-  .lvbadge{width:64px;height:64px;flex:0 0 64px;border-radius:50%;display:grid;place-items:center;
-    position:relative;background:conic-gradient(var(--gold) var(--p,0deg), var(--fill-2) 0deg)}
-  .lvbadge::after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--panel)}
-  .lvbadge span{position:relative;z-index:1;font-family:var(--mono);font-size:23px;font-weight:800}
-  .lvmeta{flex:1;min-width:0}
-  .lvmeta .name{font-weight:800;font-size:15px}
-  .lvmeta .name small{font-weight:600}
-  .lvmeta .xp{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--muted);margin-top:4px}
-  .totalxp{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--gold)}
-
-  .radar{width:100%;max-width:330px;height:auto;display:block;margin:8px auto 2px}
-  .radar polygon.shape{transition:all .5s cubic-bezier(.2,.8,.2,1)}
-
-  .stat{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:13.5px}
-  .dot{width:8px;height:8px;border-radius:2px;flex:0 0 8px;transform:rotate(45deg)}
-  .stat .nm{width:64px;font-weight:700}
-  .bar{flex:1;height:7px;border-radius:99px;background:var(--fill-2);overflow:hidden}
-  .bar i{display:block;height:100%;border-radius:99px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
-  .stat .lv{font-family:var(--mono);font-size:11.5px;font-weight:800;width:34px;text-align:right}
-  .stat .xpv{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--muted);
-    width:44px;text-align:right}
-  .stat .bar{height:8px}
-
-  .tabs{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-  .tabs::-webkit-scrollbar{display:none}
-  .tab{border:1px solid var(--line);background:var(--panel-2);color:var(--muted);white-space:nowrap;
-    padding:9px 15px;border-radius:999px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:var(--sans)}
-  .tab[aria-selected="true"]{color:#fff;border-color:transparent}
-
-  .quest{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:14px;
-    background:var(--fill);margin-bottom:8px;position:relative;overflow:hidden;
-    transition:background .15s,transform .1s}
-  .quest::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--qc,transparent)}
-  .quest:hover{background:var(--fill-2)}
-  .quest .q-nm{flex:1;font-size:14.5px;font-weight:600}
-  .quest .q-xp{font-family:var(--mono);font-size:12.5px;font-weight:800;padding:4px 9px;
-    border-radius:999px;background:color-mix(in srgb, currentColor 13%, transparent)}
-  .quest .q-count{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--muted)}
-  .add{width:44px;height:44px;flex:0 0 44px;border-radius:12px;border:1px solid var(--line);
-    background:var(--panel);color:var(--text);font-size:20px;font-weight:700;cursor:pointer;
-    transition:transform .1s,background .15s}
-  .add:active{transform:scale(.9);background:var(--fill-2)}
-
-  .newq{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-  .newq input,.newq select{background:var(--panel-2);border:1px solid var(--line);color:var(--text);
-    border-radius:11px;padding:11px 12px;font-size:16px;font-weight:600;font-family:var(--sans)}
-  .newq input[type=text]{flex:1;min-width:140px}
-  .newq input[type=number]{width:80px;font-family:var(--mono)}
-  .newq button{background:linear-gradient(180deg,var(--gold),color-mix(in srgb,var(--gold) 82%, #000));
-    color:var(--on-gold);border:0;border-radius:12px;padding:11px 18px;font-weight:800;font-size:14px;
-    cursor:pointer;box-shadow:0 4px 12px rgba(201,123,18,.24)}
-
-  .sec-t{display:flex;align-items:center;gap:10px;font-size:11.5px;letter-spacing:.14em;font-weight:700;
-    color:var(--muted);font-family:var(--mono);margin:0 0 13px}
-  .sec-t::after{content:"";flex:1;height:1px;background:var(--line)}
-  .today{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-  .today .bar{height:9px}
-  .today .num{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
-  .log{list-style:none;margin:0;padding:0;max-height:240px;overflow:auto}
-  .log li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);
-    font-size:13.5px;font-weight:600}
-  .log .t{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);width:44px}
-  .log .x{margin-left:auto;font-family:var(--mono);font-size:12.5px;font-weight:800}
-  .empty{color:var(--muted);font-size:13.5px;font-weight:500;padding:12px 0}
-
-.stage{position:relative;height:min(58vh,430px);margin:4px 0 4px;touch-action:pan-y}
-  .stage::before{content:"";position:absolute;left:50%;bottom:44px;transform:translateX(-50%);
-    width:min(78%,300px);aspect-ratio:1;border-radius:50%;pointer-events:none;
-    background:radial-gradient(circle at 50% 55%, var(--gold-soft) 0%, transparent 62%)}
-  .stage::after{content:"";position:absolute;left:50%;bottom:52px;transform:translateX(-50%);
-    width:min(52%,190px);height:16px;border-radius:50%;pointer-events:none;
-    background:radial-gradient(ellipse, rgba(30,35,80,.13) 0%, transparent 70%)}
-  [data-theme="dark"] .stage::after{background:radial-gradient(ellipse, rgba(0,0,0,.5) 0%, transparent 70%)}
-  #c3d{width:100%;height:100%;display:block;cursor:grab}
-  #c3d:active{cursor:grabbing}
-  .stage .hint{position:absolute;left:0;right:0;bottom:2px;text-align:center;font-size:11px;
-    font-weight:600;color:var(--muted);pointer-events:none}
-  .views{display:flex;gap:6px;justify-content:center;margin:10px 0 4px}
-  .views{gap:7px}
-  .vbtn{border:1px solid var(--line);background:var(--panel-2);color:var(--muted);border-radius:999px;
-    padding:9px 17px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:var(--sans);
-    transition:.15s}
-  .vbtn[aria-current="true"]{box-shadow:0 4px 12px rgba(201,123,18,.22)}
-  .vbtn[aria-current="true"]{background:var(--gold);color:var(--on-gold);border-color:transparent}
-  .pager{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;scroll-behavior:smooth}
-  .pager::-webkit-scrollbar{display:none}
-  .page{flex:0 0 100%;min-width:100%;scroll-snap-align:start}
-  .dots{display:flex;gap:7px;justify-content:center;align-items:center;margin:18px 0 2px}
-  .dot-n{width:8px;height:8px;border-radius:99px;background:var(--fill-2);border:0;padding:0;cursor:pointer;
-    transition:width .2s,background .2s}
-  .dot-n[aria-current="true"]{background:var(--gold);width:24px}
-  .weekwrap{position:relative}
-  .goal{position:absolute;left:0;right:0;border-top:1px dashed var(--line);pointer-events:none}
-  .goal span{position:absolute;right:0;top:-16px;font-family:var(--mono);font-size:9.5px;
-    font-weight:700;color:var(--muted);letter-spacing:.04em}
-  .week{display:flex;align-items:flex-end;gap:8px;position:relative;z-index:1}
-  .week .col.today .d{color:var(--gold)}
-  .week .col.today .v{color:var(--gold)}
-  .week .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
-  .week .stack{width:100%;border-radius:7px 7px 4px 4px;overflow:hidden;display:flex;
-    flex-direction:column-reverse;background:var(--fill-2)}
-  .week .stack i{display:block;width:100%}
-  .week .d{font-size:10.5px;font-weight:700;color:var(--muted);font-family:var(--mono)}
-  .week .v{font-family:var(--mono);font-size:10.5px;font-weight:800;color:var(--muted);height:14px}
-  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .kpi{background:var(--fill);border-radius:12px;padding:13px}
-  .kpi{border:1px solid var(--line)}
-  .kpi b{display:block;font-family:var(--mono);font-size:24px;font-weight:800;line-height:1.15;
-    letter-spacing:-.02em}
-  .kpi span{font-size:11.5px;font-weight:600;color:var(--muted)}
-  .rank{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);
-    font-size:13.5px;font-weight:600}
-  .rank .n{font-family:var(--mono);color:var(--muted);width:16px;font-size:12px}
-  .rank .c{margin-left:auto;font-family:var(--mono);font-weight:800;font-size:12.5px}
-  .foot{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-  .ghost{background:transparent;border:1px solid var(--line);color:var(--muted);
-    border-radius:11px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans)}
-
-  #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));
-    transform:translate(-50%,20px);opacity:0;background:var(--gold);color:var(--on-gold);
-    font-weight:800;padding:12px 22px;border-radius:999px;font-size:14px;pointer-events:none;
-    transition:.35s;z-index:9;box-shadow:0 6px 20px rgba(0,0,0,.22)}
-  #toast.on{opacity:1;transform:translate(-50%,0)}
-  .float{position:fixed;font-family:var(--mono);font-weight:800;font-size:16px;pointer-events:none;
-    z-index:9;animation:fly .9s ease-out forwards}
-  @keyframes fly{to{transform:translateY(-48px);opacity:0}}
-  .warn{background:var(--gold-soft);border:1px solid var(--gold);color:var(--text);font-weight:600;
-    padding:10px 13px;border-radius:12px;font-size:12.5px;margin-bottom:14px}
-  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-
-  @media (max-width:800px){
-    .grid{grid-template-columns:1fr}
-    body{padding:16px 12px calc(40px + env(safe-area-inset-bottom))}
-    .card{padding:15px;border-radius:14px}
-    .tagline{display:none}
-    .log{max-height:none}
-  }
-  @media (prefers-reduced-motion:reduce){.float,#toast{animation:none}}
+  button,input,select{font-family:inherit}
+  button{cursor:pointer}
+  :is(button,input,select,a):focus-visible{outline:2.5px solid var(--teal-d);outline-offset:2px}
 </style>
+<style>
+  /* ---------- shell ---------- */
+  .app{display:grid;grid-template-columns:76px 320px minmax(0,1fr);
+    gap:0;min-height:100vh}
+  .rail{display:flex;flex-direction:column;align-items:center;gap:10px;
+    padding:18px 0 24px;background:var(--card);border-right:1px solid var(--line)}
+  .rail .rbtn{width:44px;height:44px;border:0;border-radius:14px;background:transparent;
+    display:grid;place-items:center;color:var(--ink-2);transition:.18s}
+  .rail .rbtn:hover{background:var(--panel-2);color:var(--ink)}
+  .rail .rbtn[aria-current="true"]{background:var(--card);color:var(--teal-d);
+    box-shadow:var(--shadow-m)}
+  .rail .rbtn svg{width:21px;height:21px;fill:none;stroke:currentColor;
+    stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .rail .logo-dot{width:40px;height:40px;border-radius:13px;margin-bottom:12px;
+    background:linear-gradient(150deg,var(--mint),var(--sea) 55%,var(--lilac));
+    display:grid;place-items:center;box-shadow:var(--shadow-m)}
+  .rail .logo-dot svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2}
 
-<div class="wrap">
-  <header>
+  /* ---------- left showcase ---------- */
+  .side{background:var(--panel);padding:20px 18px 26px;display:flex;
+    flex-direction:column;gap:16px;border-right:1px solid var(--line)}
+  .brand{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:2px 4px 0}
+  .brand h1{margin:0;font-family:var(--f-display);font-weight:700;font-size:26px;
+    letter-spacing:.01em;color:var(--teal-d);
+    text-shadow:0 2px 0 rgba(255,255,255,.9), 0 4px 10px rgba(31,167,145,.20)}
+  .brand h1 i{font-style:normal;color:var(--coral)}
+  .iconbtn{width:34px;height:34px;border:0;border-radius:11px;background:transparent;
+    color:var(--ink-2);display:grid;place-items:center;transition:.18s}
+  .iconbtn:hover{background:var(--panel-2);color:var(--ink)}
+  .iconbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  .showcase{background:var(--card);border-radius:var(--r-l);padding:14px;
+    box-shadow:var(--shadow-m);display:flex;flex-direction:column;gap:12px}
+  .stage{position:relative;border-radius:20px;overflow:hidden;
+    height:clamp(300px,42vh,392px);background:#BDECF7;touch-action:pan-y;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.55)}
+  .stage::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+    border-radius:inherit;
+    background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,0) 30%);
+    box-shadow:inset 0 0 44px rgba(20,70,80,.17)}
+  #c3d{width:100%;height:100%;display:block;position:relative;z-index:1;cursor:grab}
+  #c3d:active{cursor:grabbing}
+  .stage .hint{position:absolute;left:0;right:0;bottom:9px;z-index:3;text-align:center;
+    font-size:11px;font-weight:700;color:rgba(255,255,255,.9);pointer-events:none;
+    text-shadow:0 1px 4px rgba(0,60,50,.5)}
+  .vc-label{text-align:center;font-family:var(--f-display);font-weight:600;
+    font-size:13px;letter-spacing:.11em;color:var(--ink-2)}
+  .views{display:flex;gap:10px;justify-content:center;padding-bottom:2px}
+  .vbtn{width:56px;height:46px;border-radius:15px;border:1.5px solid var(--line);
+    background:var(--card-2);color:var(--ink-2);display:grid;place-items:center;
+    transition:.18s;box-shadow:var(--shadow-s)}
+  .vbtn svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round}
+  .vbtn:hover{color:var(--ink);transform:translateY(-1px)}
+  .vbtn[aria-current="true"]{background:var(--teal);border-color:transparent;color:#fff;
+    box-shadow:0 5px 16px rgba(47,191,168,.4)}
+
+  /* ---------- main ---------- */
+  main{padding:18px 22px 34px;display:flex;flex-direction:column;gap:16px;min-width:0}
+  .topbar{display:flex;align-items:center;gap:14px}
+  .search{flex:1;min-width:0;position:relative}
+  .search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);
+    width:18px;height:18px;fill:none;stroke:var(--muted);stroke-width:2;
+    stroke-linecap:round;pointer-events:none}
+  .search input{width:100%;height:46px;border-radius:999px;border:1.5px solid var(--line);
+    background:var(--card);color:var(--ink);padding:0 18px 0 44px;font-size:15px;
+    font-weight:600;box-shadow:var(--shadow-s)}
+  .search input::placeholder{color:var(--muted);font-weight:600}
+  .tb-right{display:flex;align-items:center;gap:8px}
+  .bell{position:relative}
+  .bell b{position:absolute;top:5px;right:6px;width:8px;height:8px;border-radius:50%;
+    background:var(--coral);box-shadow:0 0 0 2px var(--card)}
+  .avatar{display:flex;align-items:center;gap:6px;border:0;background:transparent;
+    padding:2px 6px 2px 2px;border-radius:999px;transition:.18s}
+  .avatar:hover{background:var(--card)}
+  .avatar span{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--sun),var(--coral));color:#fff;
+    font-family:var(--f-display);font-weight:700;font-size:15px;
+    box-shadow:0 0 0 2.5px var(--card), var(--shadow-s)}
+  .avatar svg{width:15px;height:15px;stroke:var(--ink-2);fill:none;stroke-width:2.4;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  /* level strip */
+  .levelrow{display:flex;align-items:center;gap:16px;background:var(--card);
+    border-radius:var(--r-l);padding:14px 18px;box-shadow:var(--shadow-m)}
+  .levelrow h2{margin:0;font-family:var(--f-display);font-weight:700;font-size:30px;
+    letter-spacing:-.01em;white-space:nowrap}
+  .xpwrap{flex:1;min-width:0;height:34px;border-radius:999px;background:var(--panel-2);
+    border:1.5px solid var(--line);position:relative;overflow:hidden;display:flex;
+    align-items:center}
+  .xpwrap i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;
+    background:linear-gradient(90deg,var(--xp-a),var(--xp-b) 55%,var(--xp-c));
+    transition:width .55s cubic-bezier(.2,.8,.2,1)}
+  .xpwrap em{position:relative;z-index:1;font-style:normal;font-weight:900;font-size:12px;
+    letter-spacing:.1em;color:var(--ink);background:rgba(255,255,255,.82);
+    border-radius:999px;padding:4px 11px;margin-left:8px}
+  .totalxp{font-weight:800;font-size:15px;white-space:nowrap;background:var(--panel-2);
+    border:1.5px solid var(--line);border-radius:999px;padding:9px 16px}
+
+  /* card grid */
+  .grid{display:grid;grid-template-columns:minmax(0,1.32fr) minmax(0,1fr);
+    gap:16px;align-items:start}
+  .card{background:var(--card);border-radius:var(--r-l);padding:18px;
+    box-shadow:var(--shadow-m);min-width:0}
+  .card > h3{margin:0 0 14px;font-family:var(--f-display);font-weight:600;font-size:19px;
+    display:flex;align-items:center;gap:8px}
+  .card > h3 .emo{font-size:17px;line-height:1}
+  .sub{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+</style>
+<style>
+  /* ---------- character overview ---------- */
+  .ovwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+  .radar{width:100%;max-width:330px;height:auto;display:block;margin:0 auto}
+  .radar .shape{transition:d .5s,points .5s}
+  .statlist{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+  .stat{display:flex;align-items:center;gap:10px;font-size:13.5px}
+  .stat .chip{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;
+    font-size:15px;flex:0 0 30px}
+  .stat .nm{width:34px;font-weight:900;letter-spacing:.05em;font-size:12.5px}
+  .bar{flex:1;height:10px;border-radius:99px;background:var(--panel-2);overflow:hidden;
+    border:1px solid var(--line)}
+  .bar i{display:block;height:100%;border-radius:99px;
+    transition:width .55s cubic-bezier(.2,.8,.2,1)}
+  .stat .lv{font-weight:900;font-size:12px;width:38px;text-align:right}
+
+  /* ---------- quest log ---------- */
+  .tabs{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{border:1.5px solid var(--line);background:var(--card-2);color:var(--muted);
+    padding:8px 14px;border-radius:999px;font-size:13px;font-weight:800;white-space:nowrap;
+    transition:.16s}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected="true"]{color:#fff;border-color:transparent;box-shadow:var(--shadow-s)}
+  .quest{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;
+    background:var(--card-2);border:1.5px solid var(--line);margin-bottom:9px;
+    transition:.16s}
+  .quest:hover{transform:translateY(-1px);box-shadow:var(--shadow-s)}
+  .quest .tick{width:30px;height:30px;flex:0 0 30px;border-radius:50%;border:0;
+    display:grid;place-items:center;background:var(--ok);color:#fff;transition:.16s}
+  .quest .tick svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:3;
+    stroke-linecap:round;stroke-linejoin:round}
+  .quest .tick:hover{transform:scale(1.09)}
+  .quest .tick:active{transform:scale(.9)}
+  .quest .q-nm{flex:1;font-size:15px;font-weight:700;min-width:0}
+  .quest .q-count{font-size:11.5px;font-weight:800;color:var(--muted)}
+  .quest .q-xp{font-weight:900;font-size:12.5px;padding:4px 10px;border-radius:999px}
+  .quest .q-emo{font-size:17px}
+  .newq{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .newq input,.newq select{background:var(--card-2);border:1.5px solid var(--line);
+    color:var(--ink);border-radius:13px;padding:10px 12px;font-size:15px;font-weight:700}
+  .newq input[type=text]{flex:1;min-width:130px}
+  .newq input[type=number]{width:76px}
+  .newq button{background:var(--teal);color:#fff;border:0;border-radius:13px;
+    padding:10px 18px;font-weight:900;font-size:14px;box-shadow:0 4px 14px rgba(47,191,168,.35)}
+  .newq button:hover{background:var(--teal-d)}
+
+  /* ---------- week chart ---------- */
+  .week{display:flex;align-items:flex-end;gap:8px;height:132px}
+  .week .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+    height:100%;justify-content:flex-end}
+  .week .stack{width:100%;border-radius:10px 10px 6px 6px;overflow:hidden;display:flex;
+    flex-direction:column-reverse;background:var(--panel-2);border:1px solid var(--line);
+    transition:height .5s cubic-bezier(.2,.8,.2,1)}
+  .week .stack i{display:block;width:100%}
+  .week .d{font-size:11px;font-weight:800;color:var(--muted)}
+  .week .col.today .d{color:var(--teal-d)}
+  .week .v{font-size:10.5px;font-weight:800;color:var(--muted);height:13px}
+
+  /* ---------- kpis ---------- */
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{background:var(--card-2);border:1.5px solid var(--line);border-radius:16px;
+    padding:12px 13px}
+  .kpi b{display:block;font-family:var(--f-display);font-weight:700;font-size:24px;
+    line-height:1.16}
+  .kpi span{font-size:11.5px;font-weight:700;color:var(--muted)}
+
+  /* ---------- top activities ---------- */
+  .toplist{display:flex;flex-direction:column;gap:9px}
+  .rank{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:14px;
+    background:var(--card-2);border:1.5px solid var(--line);font-size:14px;font-weight:700}
+  .rank .medal{width:32px;height:32px;flex:0 0 32px;border-radius:11px;display:grid;
+    place-items:center;font-size:15px}
+  .rank .c{margin-left:auto;font-weight:900;font-size:13px}
+  .empty{color:var(--muted);font-size:13.5px;font-weight:700;padding:14px 2px}
+
+  .foot{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap}
+  .ghost{background:var(--card-2);border:1.5px solid var(--line);color:var(--ink-2);
+    border-radius:12px;padding:9px 14px;font-size:13px;font-weight:800;transition:.16s}
+  .ghost:hover{color:var(--ink);border-color:var(--line-2)}
+
+  #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;
+    background:var(--teal);color:#fff;font-weight:900;padding:13px 24px;border-radius:999px;
+    font-size:15px;pointer-events:none;z-index:60;transition:.35s;
+    box-shadow:0 10px 30px rgba(31,167,145,.45)}
+  #toast.on{opacity:1;transform:translate(-50%,0)}
+  .float{position:fixed;font-weight:900;font-size:17px;pointer-events:none;z-index:60;
+    animation:fly .95s ease-out forwards}
+  @keyframes fly{to{transform:translateY(-52px);opacity:0}}
+  .spark{position:fixed;width:9px;height:9px;border-radius:3px;pointer-events:none;z-index:60;
+    animation:spark .85s cubic-bezier(.18,.7,.3,1) forwards}
+  @keyframes spark{0%{transform:translate(-50%,-50%) scale(1) rotate(0)}
+    100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.25) rotate(200deg);opacity:0}}
+  .warn{background:#FFF3D6;border:1.5px solid var(--sun);color:#7A5A16;font-weight:700;
+    padding:10px 14px;border-radius:14px;font-size:13px;margin-bottom:12px}
+
+  /* ---------- design page ---------- */
+  .lede{margin:0 0 16px;font-size:14.5px;font-weight:600;color:var(--ink-2);max-width:56ch}
+  .sub-h{margin:22px 0 10px;font-family:var(--f-display);font-weight:600;font-size:15px}
+  .themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px}
+  .theme{text-align:left;padding:0;border:2px solid var(--line);border-radius:18px;
+    background:var(--card-2);overflow:hidden;transition:.18s}
+  .theme:hover{transform:translateY(-2px);box-shadow:var(--shadow-m)}
+  .theme[aria-pressed="true"]{border-color:var(--teal);box-shadow:var(--shadow-m)}
+  .theme .swatch{height:74px;display:flex}
+  .theme .swatch i{flex:1}
+  .theme .meta{display:flex;align-items:center;gap:8px;padding:10px 12px}
+  .theme .meta b{font-family:var(--f-display);font-weight:600;font-size:15px}
+  .theme .meta span{font-size:11.5px;font-weight:700;color:var(--muted);margin-left:auto}
+  .theme .meta .dot{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;
+    background:var(--teal);color:#fff;font-size:10px;opacity:0;transition:.18s}
+  .theme[aria-pressed="true"] .meta .dot{opacity:1}
+  .segs{display:flex;gap:8px;flex-wrap:wrap}
+  .segs button{border:1.5px solid var(--line);background:var(--card-2);color:var(--ink-2);
+    border-radius:12px;padding:9px 16px;font-size:13.5px;font-weight:800;transition:.16s}
+  .segs button:hover{color:var(--ink)}
+  .segs button[aria-pressed="true"]{background:var(--teal);border-color:transparent;color:#fff}
+
+  @media (max-width:1080px){
+    .grid{grid-template-columns:minmax(0,1fr)}
+    .sub{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:900px){
+    .app{grid-template-columns:1fr}
+    .rail{flex-direction:row;justify-content:center;gap:6px;padding:10px;
+      border-right:0;border-bottom:1px solid var(--line);
+      position:sticky;top:0;z-index:20}
+    .rail .logo-dot{display:none}
+    .side{border-right:0;border-bottom:1px solid var(--line)}
+    main{padding:14px 14px 30px}
+    .levelrow{flex-wrap:wrap;gap:10px}
+    .levelrow h2{font-size:25px}
+    .sub{grid-template-columns:1fr}
+    .stage{height:min(52vh,360px)}
+  }
+  @media (max-width:520px){
+    .totalxp{order:3;width:100%;text-align:center}
+    .search input{height:42px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .float,.spark,#toast{animation:none;transition:none}
+  }
+</style>
+<div class="app">
+
+  <nav class="rail" aria-label="Sections">
+    <div class="logo-dot" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 3l7 4v10l-7 4-7-4V7z"/><path d="M12 3v18"/></svg>
+    </div>
+    <button class="rbtn" aria-current="true" aria-label="Dashboard">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+    </button>
+    <button class="rbtn" data-goto="quests" aria-label="Quests">
+      <svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 012 2v16l-7-4-7 4V5a2 2 0 012-2z"/></svg>
+    </button>
+    <button class="rbtn" data-goto="week" aria-label="Progress">
+      <svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M20 19H4"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-3"/></svg>
+    </button>
+    <button class="rbtn" data-goto="kpis" aria-label="Records">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12v5a6 6 0 01-12 0z"/><path d="M9 21h6"/><path d="M12 14v7"/></svg>
+    </button>
+    <button class="rbtn" data-goto="top" aria-label="Top activities">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0"/><path d="M16 11a3 3 0 100-6"/><path d="M18 20a6 6 0 00-3-5.2"/></svg>
+    </button>
+    <button class="rbtn" id="themeBtn" aria-label="Switch theme">
+      <svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4 8.5 8.5 0 1020 14.5z"/></svg>
+    </button>
+    <button class="rbtn" id="designBtn" aria-label="Design">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+    </button>
+  </nav>
+
+  <aside class="side">
     <div class="brand">
-      <div class="mark">LR</div>
-      <div>
-        <div class="logo">LIFE<b>:</b>RPG</div>
-        <div class="tagline">What you do in real life becomes your stats</div>
-      </div>
+      <h1>LIFE<i>:</i>RPG</h1>
+      <button class="iconbtn" id="resetBtn" aria-label="Reset everything">
+        <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+      </button>
     </div>
-    <div class="hd-right">
-      <div class="streak" id="streak">0 day streak</div>
-      <button class="theme-btn" id="themeBtn" aria-label="Switch theme">🌙</button>
-    </div>
-  </header>
 
-  <div id="warn"></div>
-
-  <div class="pager" id="pager">
-
-  <!-- PAGE 1 · CHARACTER -->
-  <section class="page">
-    <div class="card">
-      <h2 class="sec-t">YOUR CHARACTER</h2>
+    <div class="showcase">
       <div class="stage">
         <canvas id="c3d"></canvas>
-        <div class="hint" id="hint">Drag or scroll to turn</div>
+        <div class="hint">Drag or scroll to turn</div>
       </div>
+      <div class="vc-label">VIEW CONTROLS</div>
       <div class="views">
-        <button class="vbtn" data-a="0" aria-current="true">Front</button>
-        <button class="vbtn" data-a="90">Side</button>
-        <button class="vbtn" data-a="180">Back</button>
+        <button class="vbtn" data-a="0" aria-current="true" aria-label="Front view">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="10.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10.5" r="1.1" fill="currentColor" stroke="none"/><path d="M9.5 15c1.6 1.2 3.4 1.2 5 0"/></svg>
+        </button>
+        <button class="vbtn" data-a="90" aria-label="Side view">
+          <svg viewBox="0 0 24 24"><path d="M15 4c-4 0-7 3.4-7 7.6 0 2 .6 3 .6 4.4 0 1-.6 1.4-.6 2.4 0 1 .8 1.6 2 1.6"/><circle cx="12.5" cy="11" r="1.1" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <button class="vbtn" data-a="180" aria-label="Back view">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M6 9c2.4-2.4 9.6-2.4 12 0"/></svg>
+        </button>
       </div>
     </div>
-  </section>
+  </aside>
 
-  <!-- PAGE 2 · STATS + QUESTS -->
-  <section class="page">
+  <main>
+    <div class="topbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2"/></svg>
+        <input type="search" id="q" placeholder="Search quests" aria-label="Search quests">
+      </div>
+      <div class="tb-right">
+        <button class="iconbtn" id="undoBtn" aria-label="Undo last entry">
+          <svg viewBox="0 0 24 24"><path d="M3 10h11a5 5 0 010 10h-3"/><path d="M7 6l-4 4 4 4"/></svg>
+        </button>
+        <button class="iconbtn bell" id="streakBtn" aria-label="Streak">
+          <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8z"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+          <b id="streakDot" hidden></b>
+        </button>
+        <button class="avatar" id="avatarBtn" aria-label="Your level">
+          <span id="avLv">1</span>
+          <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="warn"></div>
+
+    <section class="levelrow">
+      <h2>Level <span id="lvNum">1</span></h2>
+      <div class="xpwrap"><i id="xpFill" style="width:0%"></i><em>XP</em></div>
+      <div class="totalxp"><span id="totalXp">0</span> XP</div>
+    </section>
+
     <div class="grid">
-      <section class="card">
-        <div class="lvrow">
-          <div class="lvbadge" id="badge"><span id="lvNum">1</span></div>
-          <div class="lvmeta">
-            <div class="name">Your character <small style="color:var(--muted)">Lv.<span id="lvNum2">1</span></small></div>
-            <div class="xp" id="lvXp">0 / 100 XP</div>
-            <div class="totalxp" id="totalXp">0 XP total</div>
-          </div>
+      <section class="card" id="overview">
+        <h3><span class="emo">🧭</span>Character Overview</h3>
+        <div class="ovwrap">
+          <svg class="radar" viewBox="0 0 260 250" id="radar" aria-label="Stat pentagon"></svg>
+          <div class="statlist" id="stats"></div>
         </div>
-        <svg class="radar" viewBox="0 0 240 220" id="radar" aria-label="Stat pentagon"></svg>
-        <div id="stats"></div>
       </section>
 
-      <section class="card">
-        <h2 class="sec-t">QUEST LOG · LOG WHAT YOU DID</h2>
+      <section class="card" id="quests">
+        <h3><span class="emo">📜</span>Daily Quest Log</h3>
         <div class="tabs" id="tabs" role="tablist"></div>
-        <div id="quests"></div>
+        <div id="questList"></div>
         <div class="newq">
-          <input type="text" id="qName" placeholder="Your own quest" maxlength="26">
-          <select id="qStat"></select>
-          <input type="number" id="qXp" value="15" min="1" max="200">
+          <input type="text" id="qName" placeholder="Your own quest" maxlength="28">
+          <select id="qStat" aria-label="Stat"></select>
+          <input type="number" id="qXp" value="15" min="1" max="200" aria-label="XP">
           <button id="qAdd">Add</button>
         </div>
       </section>
     </div>
 
-    <section class="card" style="margin-top:16px">
-      <h2 class="sec-t">TODAY · <span id="dateLabel"></span></h2>
-      <div class="today">
-        <div class="bar"><i id="todayBar" style="background:var(--gold);width:0%"></i></div>
-        <div class="num"><span id="todayXp">0</span> / 100 XP</div>
+    <div class="sub">
+      <section class="card" id="week">
+        <h3><span class="emo">📈</span>Past 7 Days</h3>
+        <div class="week" id="weekChart"></div>
+      </section>
+      <section class="card" id="kpis">
+        <h3><span class="emo">🏅</span>KPIs</h3>
+        <div class="kpis" id="kpiGrid"></div>
+      </section>
+    </div>
+
+    <section class="card" id="design" hidden>
+      <h3><span class="emo">🎨</span>Design</h3>
+      <p class="lede">Pick a look. It changes the whole page and the little world
+        your character stands in.</p>
+      <div class="themes" id="themeGrid"></div>
+
+      <h4 class="sub-h">Appearance</h4>
+      <div class="segs" id="modeSegs">
+        <button data-mode="light">Light</button>
+        <button data-mode="dark">Dark</button>
+        <button data-mode="system">System</button>
       </div>
-      <ul class="log" id="log"></ul>
-      <div class="foot">
-        <button class="ghost" id="undo">Undo last entry</button>
-        <button class="ghost" id="reset">Reset everything</button>
+
+      <h4 class="sub-h">Motion</h4>
+      <div class="segs" id="spinSegs">
+        <button data-spin="on">Turntable on</button>
+        <button data-spin="off">Hold still</button>
       </div>
     </section>
-  </section>
-
-  <!-- PAGE 3 · STATS -->
-  <section class="page">
-    <div class="card">
-      <h2 class="sec-t">LAST 7 DAYS</h2>
-      <div class="weekwrap"><div class="week" id="week"></div></div>
-    </div>
-    <div class="card" style="margin-top:16px">
-      <h2 class="sec-t">ALL TIME</h2>
-      <div class="kpis" id="kpis"></div>
-    </div>
-    <div class="card" style="margin-top:16px">
-      <h2 class="sec-t">MOST LOGGED</h2>
-      <div id="topq"></div>
-    </div>
-  </section>
-  </div>
-
-  <div class="dots">
-    <button class="dot-n" data-p="0" aria-current="true" aria-label="Character"></button>
-    <button class="dot-n" data-p="1" aria-label="Stats and quests"></button>
-    <button class="dot-n" data-p="2" aria-label="History"></button>
-  </div>
+    <section class="card" id="top">
+      <h3><span class="emo">✨</span>Top Activities</h3>
+      <div class="toplist" id="topList"></div>
+      <div class="foot">
+        <button class="ghost" id="undo2">Undo last entry</button>
+        <button class="ghost" id="reset2">Reset everything</button>
+      </div>
+    </section>
+  </main>
 </div>
 
+<div id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-<div id="toast"></div>
-
 <script>
-const FRAG = `#version 300 es
-precision highp float;
-uniform vec2 iResolution; uniform float iTime;
-uniform float uSpeed,uAmplitude,uWaveScale,uWaveRatio,uSwell,uTurbulence,uTilt,uZoom,uHeight;
-uniform float uFogDepth,uSteps,uBrightness,uOpacity,uGrainIntensity,uParallax;
-uniform vec2 uMouse;
-uniform vec3 uHorizonColor,uWaveColor,uCrestColor;
-out vec4 fragColor;
-const float MAX_DIST=20000.0;
-float hash21(vec2 p){vec3 p3=fract(vec3(p.xyx)*0.1031);p3+=dot(p3,p3.yzx+33.33);return fract((p3.x+p3.y)*p3.z);}
-float plasma(vec3 r,vec2 freq,vec4 tc){
-  float mx=r.x+tc.x; mx+=uSwell*sin((r.y+mx)/20.0+tc.y);
-  float my=r.y-tc.z; my+=uTurbulence*cos(r.x/23.0+tc.w);
-  return r.z-(sin(mx*freq.x)*uAmplitude+sin(my*freq.y)*uAmplitude+uHeight);
-}
-float raymarch(vec3 pos,vec3 dir,vec2 freq,vec4 tc){
-  float dist=0.0;
-  for(int i=0;i<128;i++){
-    if(float(i)>=uSteps) break;
-    float d=plasma(pos+dist*dir,freq,tc);
-    if(abs(d)<0.1) break;
-    dist+=0.9*d;
-    if(!(abs(dist)<MAX_DIST)) return MAX_DIST;
-  }
-  return dist;
-}
-void main(){
-  float T=iTime*uSpeed;
-  vec2 freq=vec2(uWaveScale/7.0,(uWaveScale*uWaveRatio)/3.0);
-  vec4 tc=vec4(T/0.130,T/0.810,T/0.200,T/0.710);
-  float c,s;
-  float vfov=(3.14159/2.3)/max(uZoom,0.05);
-  vec3 cam=vec3(0.0,0.0,30.0);
-  vec2 uv=(gl_FragCoord.xy/iResolution.xy)-0.5;
-  uv.x*=iResolution.x/iResolution.y; uv.y*=-1.0;
-  vec3 dir=vec3(0.0,0.0,-1.0);
-  float ulen=length(uv);
-  float xrot=vfov*ulen; c=cos(xrot); s=sin(xrot);
-  dir=mat3(1.0,0.0,0.0, 0.0,c,-s, 0.0,s,c)*dir;
-  vec2 nuv= ulen>1e-5 ? uv/ulen : vec2(1.0,0.0);
-  c=nuv.x; s=nuv.y;
-  dir=mat3(c,-s,0.0, s,c,0.0, 0.0,0.0,1.0)*dir;
-  c=cos(uTilt); s=sin(uTilt);
-  dir=mat3(c,0.0,s, 0.0,1.0,0.0, -s,0.0,c)*dir;
-  float yaw=(uMouse.x-0.5)*uParallax*0.4, pitch=(uMouse.y-0.5)*uParallax*0.4;
-  c=cos(yaw); s=sin(yaw); dir=mat3(c,0.0,s, 0.0,1.0,0.0, -s,0.0,c)*dir;
-  c=cos(pitch); s=sin(pitch); dir=mat3(1.0,0.0,0.0, 0.0,c,-s, 0.0,s,c)*dir;
-  float dist=raymarch(cam,dir,freq,tc);
-  vec3 pos=cam+dist*dir;
-  float t=clamp(uFogDepth/max(dist,0.001),0.0,1.0);
-  vec3 body=mix(uWaveColor,uCrestColor,clamp(pos.z*0.08+0.5,0.0,1.0));
-  vec3 col=mix(uHorizonColor,body,t);
-  col=clamp(col*uBrightness,0.0,1.0);
-  float alpha=clamp(t,0.0,1.0)*uOpacity;
-  float g=hash21(gl_FragCoord.xy+mod(iTime,64.0)*11.0);
-  alpha=clamp(alpha+(g-0.5)*uGrainIntensity,0.0,1.0);
-  fragColor=vec4(col*alpha,alpha);
-}`;
-const VERT = `#version 300 es
-void main(){ vec2 p=vec2(float((gl_VertexID<<1)&2), float(gl_VertexID&2));
-  gl_Position=vec4(p*2.0-1.0,0.0,1.0); }`;
-
-/* ---------- 3D chibi character (three.js, procedural) ---------- */
 function initCharacter(){
   const cvs=document.getElementById("c3d");
   if(!window.THREE||!cvs) return null;
-  const R=new THREE.WebGLRenderer({canvas:cvs,alpha:true,antialias:true});
+  const R=new THREE.WebGLRenderer({canvas:cvs,alpha:false,antialias:true});
   R.setPixelRatio(Math.min(devicePixelRatio||1,2));
+  if("outputEncoding" in R) R.outputEncoding=THREE.sRGBEncoding;
+  R.toneMapping=THREE.ACESFilmicToneMapping; R.toneMappingExposure=0.94;
   const scene=new THREE.Scene();
-  const cam=new THREE.PerspectiveCamera(30,1,0.1,100);
+  const cam=new THREE.PerspectiveCamera(30,1,0.1,120);
+  R.shadowMap.enabled=true; R.shadowMap.type=THREE.PCFSoftShadowMap;
+  const CC = h => new THREE.Color(h).convertSRGBToLinear();
 
-  scene.add(new THREE.HemisphereLight(0xffffff,0x9AA6C8,0.9));
-  const key=new THREE.DirectionalLight(0xffffff,0.9); key.position.set(4,7,6); scene.add(key);
-  const rim=new THREE.DirectionalLight(0xFFC2E8,0.45); rim.position.set(-5,3,-6); scene.add(rim);
+  /* a bright, open-air key: sky above, grass bouncing back up from below */
+  try{
+    const ec=document.createElement("canvas"); ec.width=128; ec.height=64;
+    const g2=ec.getContext("2d");
+    const gr=g2.createLinearGradient(0,0,0,64);
+    gr.addColorStop(0.00,"#EAF9FF"); gr.addColorStop(0.40,"#C4E9F7");
+    gr.addColorStop(0.52,"#B7DCC6"); gr.addColorStop(1.00,"#83C08E");
+    g2.fillStyle=gr; g2.fillRect(0,0,128,64);
+    const b=g2.createRadialGradient(44,16,1,44,16,30);
+    b.addColorStop(0,"rgba(255,255,250,1)"); b.addColorStop(1,"rgba(255,255,250,0)");
+    g2.fillStyle=b; g2.fillRect(0,0,128,64);
+    const t=new THREE.CanvasTexture(ec); t.mapping=THREE.EquirectangularReflectionMapping;
+    const pm=new THREE.PMREMGenerator(R); pm.compileEquirectangularShader();
+    scene.environment=pm.fromEquirectangular(t).texture;
+    t.dispose(); pm.dispose();
+  }catch(e){}
 
+  const HEMI=new THREE.HemisphereLight(0xEAF8FF,0x8FCF9A,0.20);
+  HEMI.color.convertSRGBToLinear(); HEMI.groundColor.convertSRGBToLinear(); scene.add(HEMI);
+  const key=new THREE.DirectionalLight(0xFFFBEF,0.92); key.position.set(2.6,6.4,4.4);
+  key.color.convertSRGBToLinear();
+  key.castShadow=true; key.shadow.mapSize.set(2048,2048);
+  key.shadow.radius=5; key.shadow.bias=-0.0008; key.shadow.normalBias=0.014;
+  const sc0=key.shadow.camera; sc0.top=3.6; sc0.bottom=-1.2; sc0.left=-3.2; sc0.right=3.2;
+  sc0.near=0.5; sc0.far=20; sc0.updateProjectionMatrix();
+  scene.add(key);
+  const fill=new THREE.DirectionalLight(0xCDEBFF,0.26); fill.position.set(-4.2,2.6,3.6);
+  fill.color.convertSRGBToLinear(); scene.add(fill);
+  const rim=new THREE.DirectionalLight(0xFFE9C4,0.34); rim.position.set(-2.0,3.2,-5.0);
+  rim.color.convertSRGBToLinear(); scene.add(rim);
   const root=new THREE.Group(); scene.add(root);
-  const M=(c,r=0.95)=>new THREE.MeshStandardMaterial({color:new THREE.Color(c),roughness:r,metalness:0});
-  const SKIN=M("#F5CFA8"), HAIR=M("#4A3A34",0.8), PANTS=M("#3E4B70"), SHOE=M("#2A2E44",0.7);
-  const SHIRT=M("#5227FF",0.9), EYE=M("#20223A",0.4), MOUTH=M("#8A4A44",0.6);
-  const BLUSH=new THREE.MeshStandardMaterial({color:new THREE.Color("#FF9BB0"),roughness:1,
-    transparent:true,opacity:0.55});
-  const add=(geo,mat,x,y,z,rx,ry,rz,sx,sy,sz)=>{
-    const m=new THREE.Mesh(geo,mat); m.position.set(x,y,z);
-    m.rotation.set(rx||0,ry||0,rz||0); m.scale.set(sx||1,sy||sx||1,sz||sx||1);
-    root.add(m); return m;
+  /* ================= the little outdoor set =================
+     Sky, hills, a tree and the grass podium the character is stood on.
+     Everything is painted into canvases, so nothing is downloaded. */
+  const rnd=(s=>()=>(s=(s*1664525+1013904223)>>>0)/4294967296)(20260824);
+  const tex=(w,h,paint)=>{
+    const cv=document.createElement("canvas"); cv.width=w; cv.height=h;
+    paint(cv.getContext("2d"),w,h);
+    const t=new THREE.CanvasTexture(cv);
+    if("encoding" in t) t.encoding=THREE.sRGBEncoding;
+    return t;
   };
-  const SPH=(r,s)=>new THREE.SphereGeometry(r,s||28,s||22);
-  const CYL=(a,b,h)=>new THREE.CylinderGeometry(a,b,h,24);
+  const flat=(c,extra)=>new THREE.MeshStandardMaterial(
+    Object.assign({color:CC(c),roughness:0.92,metalness:0,envMapIntensity:0.32},extra||{}));
 
-  /* 3등신: 총 높이 3.0 = 머리 1.0 + 몸통·다리 2.0 */
-  add(CYL(0.155,0.15,0.62),PANTS,-0.19,0.42,0); add(CYL(0.155,0.15,0.62),PANTS,0.19,0.42,0);
-  add(SPH(0.19),SHOE,-0.19,0.13,0.05,0,0,0,1,0.8,1.35);
-  add(SPH(0.19),SHOE, 0.19,0.13,0.05,0,0,0,1,0.8,1.35);
-  add(CYL(0.44,0.36,0.92),SHIRT,0,1.16,0);
-  add(SPH(0.44),SHIRT,0,1.62,0,0,0,0,1,0.75,1);
-  add(SPH(0.36),SHIRT,0,0.72,0,0,0,0,1,0.8,1);
-  const armL=add(CYL(0.115,0.10,0.62),SHIRT,-0.50,1.28,0,0,0,0.22);
-  const armR=add(CYL(0.115,0.10,0.62),SHIRT, 0.50,1.28,0,0,0,-0.22);
-  add(SPH(0.135),SKIN,-0.57,0.95,0); add(SPH(0.135),SKIN,0.57,0.95,0);
-  add(CYL(0.16,0.16,0.14),SKIN,0,1.75,0);
+  /* sky */
+  const skyTex=tex(64,256,(c,w,h)=>{
+    const g=c.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,"#8FD8F0"); g.addColorStop(0.55,"#BDECF7"); g.addColorStop(1,"#E6F8F2");
+    c.fillStyle=g; c.fillRect(0,0,w,h);
+  });
+  const sky=new THREE.Mesh(new THREE.PlaneGeometry(40,22),
+    new THREE.MeshBasicMaterial({map:skyTex}));
+  sky.position.set(0,5.0,-9); scene.add(sky);
 
-  const head=new THREE.Group(); head.position.set(0,2.30,0); root.add(head);
-  const hm=(geo,mat,x,y,z,sx,sy,sz)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);
-    m.scale.set(sx||1,sy||sx||1,sz||sx||1); head.add(m); return m;};
-  hm(SPH(0.5,36),SKIN,0,0,0,1.02,0.98,0.96);
-  hm(new THREE.SphereGeometry(0.515,36,26,0,Math.PI*2,0,Math.PI*0.52),HAIR,0,0.015,0,1.03,1.05,1.02);
-  hm(SPH(0.075,18),EYE,-0.175,0.06,0.455,1,1.25,0.7);
-  hm(SPH(0.075,18),EYE, 0.175,0.06,0.455,1,1.25,0.7);
-  hm(SPH(0.026,12),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.3}),-0.20,0.11,0.50,1,1,0.6);
-  hm(SPH(0.026,12),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.3}), 0.15,0.11,0.50,1,1,0.6);
-  hm(SPH(0.048,14),MOUTH,0,-0.13,0.475,1.5,0.9,0.5);
-  hm(SPH(0.10,16),BLUSH,-0.31,-0.05,0.375,1,0.7,0.4);
-  hm(SPH(0.10,16),BLUSH, 0.31,-0.05,0.375,1,0.7,0.4);
+  /* clouds */
+  const cloud=(x,y,z,s)=>{
+    const g=new THREE.Group();
+    const m=new THREE.MeshBasicMaterial({color:CC("#FFFFFF"),transparent:true,opacity:0.92});
+    [[0,0,0,1],[0.8,-0.1,0,0.72],[-0.85,-0.12,0,0.66],[0.35,0.3,0,0.6]].forEach(p=>{
+      const b=new THREE.Mesh(new THREE.SphereGeometry(0.5,18,14),m);
+      b.position.set(p[0],p[1],p[2]); b.scale.set(p[3],p[3]*0.72,p[3]*0.4); g.add(b);
+    });
+    g.position.set(x,y,z); g.scale.setScalar(s); scene.add(g); return g;
+  };
+  cloud(-3.2,4.4,-7.4,1.05); cloud(3.4,5.1,-7.8,0.85); cloud(1.2,3.9,-8.2,0.6);
 
-  const shadow=new THREE.Mesh(new THREE.CircleGeometry(0.78,32),
-    new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.12}));
-  shadow.rotation.x=-Math.PI/2; shadow.position.y=0.005; root.add(shadow);
+  /* rolling hills */
+  const hillMat=flat("#6FBE7B"), hillMat2=flat("#83CB8C");
+  const hill=(x,y,z,rx,ry,mat)=>{
+    const m=new THREE.Mesh(new THREE.SphereGeometry(1,26,18),mat);
+    m.position.set(x,y,z); m.scale.set(rx,ry,rx*0.7); scene.add(m); return m;
+  };
+  hill(-3.6,-0.9,-6.2,4.2,2.4,hillMat2);
+  hill( 3.9,-1.1,-5.6,3.6,2.2,hillMat2);
+  hill( 0.2,-1.5,-4.6,4.6,2.0,hillMat);
 
+  /* grass floor */
+  const grassTex=tex(256,256,(c,w,h)=>{
+    c.fillStyle="#62BE73"; c.fillRect(0,0,w,h);
+    for(let i=0;i<1400;i++){
+      const v=rnd();
+      c.fillStyle=v<0.5?`rgba(84,166,98,${0.15+rnd()*0.3})`
+                       :`rgba(126,204,140,${0.15+rnd()*0.3})`;
+      c.fillRect(rnd()*w,rnd()*h,2+rnd()*5,1+rnd()*3);
+    }
+  });
+  grassTex.wrapS=grassTex.wrapT=THREE.RepeatWrapping; grassTex.repeat.set(6,6);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(40,26),
+    new THREE.MeshStandardMaterial({map:grassTex,roughness:0.95,metalness:0}));
+  floor.rotation.x=-Math.PI/2; floor.position.set(0,-0.42,-2);
+  floor.receiveShadow=true; scene.add(floor);
+
+  /* the podium */
+  const podium=new THREE.Group(); scene.add(podium);
+  const pod=new THREE.Mesh(new THREE.CylinderGeometry(1.16,1.24,0.42,48),flat("#4FB566"));
+  pod.position.y=-0.21; pod.receiveShadow=true; pod.castShadow=true; podium.add(pod);
+  const podTop=new THREE.Mesh(new THREE.CylinderGeometry(1.17,1.17,0.06,48),flat("#6ECC80"));
+  podTop.position.y=-0.01; podTop.receiveShadow=true; podium.add(podTop);
+  podium.scale.set(1,1,0.82);
+
+  /* a stylised tree behind the right shoulder */
+  const tree=new THREE.Group(); tree.position.set(2.35,-0.42,-2.6); scene.add(tree);
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.19,1.25,20),flat("#9C6A44"));
+  trunk.position.y=0.62; trunk.castShadow=true; tree.add(trunk);
+  [[0,1.62,0,0.72],[0.42,1.36,0.1,0.5],[-0.44,1.42,-0.06,0.54],[0.06,2.02,-0.04,0.46]]
+    .forEach(p=>{ const b=new THREE.Mesh(new THREE.SphereGeometry(1,24,18),flat("#46A85E"));
+      b.position.set(p[0],p[1],p[2]); b.scale.setScalar(p[3]);
+      b.castShadow=true; tree.add(b); });
+
+  /* a couple of bushes to balance the left */
+  [[-2.5,-0.36,-2.2,0.46],[-3.1,-0.38,-3.0,0.34],[3.35,-0.38,-1.6,0.3]].forEach(p=>{
+    const b=new THREE.Mesh(new THREE.SphereGeometry(1,20,14),flat("#54B76C"));
+    b.position.set(p[0],p[1],p[2]); b.scale.set(p[3],p[3]*0.8,p[3]);
+    b.castShadow=true; scene.add(b);
+  });
+
+  /* the whole set can be recoloured when a different design is picked */
+  const SET={
+    sky, skyTex, floor, grassTex, pod, podTop,
+    hills:[hillMat,hillMat2], leaf:[], trunk, bush:[]
+  };
+  tree.children.forEach(c=>{ if(c!==trunk) SET.leaf.push(c.material); });
+  scene.traverse(o=>{ if(o.isMesh && o.geometry && o.geometry.type==="SphereGeometry"
+    && o.position.y<0 && o.parent===scene && !SET.leaf.includes(o.material)) SET.bush.push(o.material); });
+
+  function repaintSet(p){
+    const g=(m,c)=>{ m.color.copy(CC(c)); };
+    g(pod.material,p.pod); g(podTop.material,p.podTop);
+    g(hillMat,p.hillFar); g(hillMat2,p.hillNear);
+    SET.leaf.forEach(m=>g(m,p.leaf));
+    SET.bush.forEach(m=>g(m,p.bush));
+    g(trunk.material,p.trunk);
+    const c=skyTex.image.getContext("2d"), h=skyTex.image.height, w=skyTex.image.width;
+    const lg=c.createLinearGradient(0,0,0,h);
+    lg.addColorStop(0,p.sky[0]); lg.addColorStop(0.55,p.sky[1]); lg.addColorStop(1,p.sky[2]);
+    c.fillStyle=lg; c.fillRect(0,0,w,h); skyTex.needsUpdate=true;
+    const gc=grassTex.image.getContext("2d"), gw=grassTex.image.width, gh=grassTex.image.height;
+    gc.fillStyle=p.grass; gc.fillRect(0,0,gw,gh);
+    for(let i=0;i<1400;i++){
+      gc.fillStyle = rnd()<0.5 ? p.grassA : p.grassB;
+      gc.fillRect(rnd()*gw,rnd()*gh,2+rnd()*5,1+rnd()*3);
+    }
+    grassTex.needsUpdate=true;
+  }
+  const smin=(a,b,k)=>{ const h=Math.max(0,Math.min(1,0.5+0.5*(b-a)/k));
+    return b+(a-b)*h-k*h*(1-h); };
+  function seg(px,py,pz,ax,ay,az,bx,by,bz,ra,rb){
+    const bax=bx-ax,bay=by-ay,baz=bz-az,pax=px-ax,pay=py-ay,paz=pz-az;
+    let h=(pax*bax+pay*bay+paz*baz)/(bax*bax+bay*bay+baz*baz);
+    h=h<0?0:h>1?1:h;
+    const dx=pax-bax*h,dy=pay-bay*h,dz=paz-baz*h;
+    return Math.sqrt(dx*dx+dy*dy+dz*dz)-(ra+(rb-ra)*h);
+  }
+  function ell(px,py,pz,cx,cy,cz,rx,ry,rz){
+    const x=px-cx,y=py-cy,z=pz-cz;
+    const ax=x/rx,ay=y/ry,az=z/rz, k0=Math.sqrt(ax*ax+ay*ay+az*az);
+    if(k0<1e-7) return -Math.min(rx,Math.min(ry,rz));
+    const bx=x/(rx*rx),by=y/(ry*ry),bz=z/(rz*rz);
+    return k0*(k0-1)/Math.sqrt(bx*bx+by*by+bz*bz);
+  }
+  function rbox(px,py,pz,cx,cy,cz,hx,hy,hz,r){
+    const qx=Math.abs(px-cx)-hx+r,qy=Math.abs(py-cy)-hy+r,qz=Math.abs(pz-cz)-hz+r;
+    const mx=qx>0?qx:0,my=qy>0?qy:0,mz=qz>0?qz:0;
+    return Math.sqrt(mx*mx+my*my+mz*mz)+Math.min(Math.max(qx,Math.max(qy,qz)),0)-r;
+  }
+
+  /* ================= SDF sculpt → one seamless organic mesh =================
+     Nothing here is drawn as a primitive. The shapes below form an invisible
+     skeleton; the visible surface is a single watertight mesh polygonised
+     out of the distance field, so limbs and clothing flow into one another. */
+  const smax=(a,b,k)=>-smin(-a,-b,k);
+  const slab=(y,lo,hi)=> y<lo ? lo-y : (y>hi ? y-hi : 0);
+  const ZT=0.84, IZT=1/ZT;
+  const GROUND_DROP=-0.02;
+
+  /* ---------- skin: head, ears, neck, hands, legs ---------- */
+  function fSkin(x,y,z){
+    let d=1e9;
+    const gh=slab(y,1.86,3.20);
+    if(gh<0.30){
+      let h=ell(x,y,z, 0,2.630,0.010, 0.466,0.446,0.448);
+      h=smin(h, ell(x,y,z, 0,2.336,0.030, 0.392,0.318,0.392), 0.20);
+      h=smin(h, ell(x,y,z,-0.448,2.492,-0.020, 0.054,0.126,0.102), 0.05);
+      h=smin(h, ell(x,y,z, 0.448,2.492,-0.020, 0.054,0.126,0.102), 0.05);
+      h=smin(h, ell(x,y,z, 0,2.418,0.412, 0.064,0.058,0.076), 0.075);
+      h=smin(h, seg(x,y,z, 0,1.995,0, 0,2.215,0, 0.156,0.164), 0.13);
+      d=h;
+    } else d=gh;
+
+    const gb=slab(y,1.06,2.02);
+    if(gb<0.30){
+      let t=seg(x,y,z*IZT, 0,1.38,0, 0,1.86,0, 0.246,0.184)*ZT;
+      for(let i=0;i<2;i++){ const s=i?1:-1;
+        t=smin(t, seg(x,y,z, s*0.316,1.828,0, s*0.374,1.240,0.012, 0.094,0.072), 0.07);
+        t=smin(t, ell(x,y,z, s*0.382,1.158,0.022, 0.086,0.110,0.076), 0.055);
+      }
+      d=smin(d,t,0.17);
+    } else if(gb<d) d=gb;
+
+    const gl=slab(y,0.10,1.34);
+    if(gl<0.30){
+      let l=1e9;
+      for(let i=0;i<2;i++){ const s=i?1:-1;
+        let o=seg(x,y,z, s*0.166,0.300,0.010, s*0.166,1.200,0, 0.110,0.148);
+        o=smin(o, ell(x,y,z, s*0.166,0.640,-0.034, 0.118,0.210,0.130), 0.13);
+        if(o<l) l=o;
+      }
+      d=smin(d,l,0.10);
+    } else if(gl<d) d=gl;
+    return d;
+  }
+
+  /* ---------- hair: a short, textured crop ----------
+     The hairline is a function of position: high across the forehead, dropping
+     past the ears and down to the nape, so the fringe cannot read as a brow. */
+  const TUFT=[
+    [-0.155, 3.020,  0.158, 0.098,0.166,0.090,  0.24,-0.58],
+    [ 0.118, 3.038,  0.112, 0.094,0.172,0.088,  0.30,-0.48],
+    [-0.315, 2.990, -0.025, 0.088,0.178,0.086, -0.50,-0.08],
+    [ 0.312, 2.978, -0.008, 0.088,0.174,0.086,  0.52,-0.06],
+    [ 0.022, 3.008, -0.250, 0.104,0.170,0.092,  0.04, 0.46],
+    [-0.062, 2.942,  0.336, 0.116,0.116,0.084, -0.07,-0.58],
+    [ 0.242, 3.035, -0.155, 0.082,0.172,0.080,  0.38, 0.26],
+    [-0.238, 3.025, -0.175, 0.084,0.174,0.082, -0.36, 0.28],
+    [ 0.012, 3.092, -0.055, 0.090,0.160,0.084,  0.02,-0.16]
+  ];
+  const cl01=v=>v<0?0:v>1?1:v;
+  function fHair(x,y,z){
+    const gd=slab(y,2.18,3.40);
+    if(gd>0.30) return gd;
+    const ax=Math.abs(x);
+    const T = 2.512
+            + 0.298*cl01((z-0.04)/0.34)      /* forehead: hairline sits high  */
+            - 0.118*cl01((ax-0.24)/0.20)     /* sides: drops past the ears    */
+            - 0.150*cl01((-z-0.08)/0.30);    /* back: down to the nape        */
+    let d=smax(ell(x,y,z, 0,2.638,0.004, 0.492,0.474,0.474), T-y, 0.062);
+    /* a side-swept piece sitting on the hairline, not over the eyes */
+    d=smin(d, ell(x,y,z, -0.140,2.788,0.318, 0.216,0.084,0.142), 0.06);
+    d=smin(d, ell(x,y,z,  0.180,2.818,0.296, 0.158,0.072,0.128), 0.06);
+    /* short sideburns */
+    for(let i=0;i<2;i++){ const s=i?1:-1;
+      d=smin(d, ell(x,y,z, s*0.412,2.560,0.118, 0.070,0.098,0.104), 0.05);
+    }
+    /* textured tufts on top */
+    for(let i=0;i<TUFT.length;i++){
+      const t=TUFT[i];
+      const cx=x-t[0], cy=y-t[1], cz=z-t[2];
+      const sx=cx*Math.cos(t[6])+cy*Math.sin(t[6]);
+      const s1=-cx*Math.sin(t[6])+cy*Math.cos(t[6]);
+      const py=s1*Math.cos(t[7])-cz*Math.sin(t[7]);
+      const pz=s1*Math.sin(t[7])+cz*Math.cos(t[7]);
+      const ax2=sx/t[3], ay=py/t[4], az=pz/t[5];
+      const k0=Math.sqrt(ax2*ax2+ay*ay+az*az);
+      let o;
+      if(k0<1e-7) o=-Math.min(t[3],t[4]);
+      else{
+        const bx=sx/(t[3]*t[3]), by=py/(t[4]*t[4]), bz=pz/(t[5]*t[5]);
+        o=k0*(k0-1)/Math.sqrt(bx*bx+by*by+bz*bz);
+      }
+      d=smin(d,o,0.064);
+    }
+    return d;
+  }
+
+  /* ---------- hoodie: oversized body with the hood bunched at the neck ---------- */
+  function fHood(x,y,z){
+    const gd=slab(y,1.00,2.30);
+    if(gd>0.30) return gd;
+    let d=smax(seg(x,y,z*IZT, 0,1.120,0, 0,1.905,0, 0.344,0.208)*ZT, 1.120-y, 0.05);
+    let hd=ell(x,y,z*IZT, 0,2.020,-0.215, 0.300,0.235,0.235)*ZT;
+    hd=smin(hd, ell(x,y,z, 0,1.895,-0.120, 0.290,0.170,0.230), 0.09);
+    d=smin(d,hd,0.07);
+    d=smin(d, seg(x,y,z*IZT, 0,1.900,-0.02, 0,1.985,-0.02, 0.238,0.220)*ZT, 0.06);
+    for(let i=0;i<2;i++){ const s=i?1:-1;
+      d=smin(d, seg(x,y,z, s*0.070,1.930,0.196, s*0.086,1.700,0.214, 0.022,0.020), 0.03);
+    }
+    return d;
+  }
+  /* sleeves and the kangaroo pocket, in the second hoodie colour */
+  function fAcc(x,y,z){
+    const gd=slab(y,1.10,1.96);
+    if(gd>0.30) return gd;
+    let d=1e9;
+    for(let i=0;i<2;i++){ const s=i?1:-1;
+      let sl=seg(x,y,z, s*0.318,1.868,0, s*0.378,1.262,0.012, 0.140,0.112);
+      sl=smax(sl, 1.238-y, 0.03);
+      if(sl<d) d=sl;
+    }
+    const pk=smax(rbox(x,y,z*IZT, 0,1.272,0.302, 0.232,0.106,0.038, 0.058)*ZT,
+                  1.170-y, 0.03);
+    d=smin(d,pk,0.045);
+    return d;
+  }
+
+
+  /* ---------- joggers, tucked into the sneakers ---------- */
+  function fPants(x,y,z){
+    const gd=slab(y,0.26,1.26);
+    if(gd>0.30) return gd;
+    let d=1e9;
+    for(let i=0;i<2;i++){ const s=i?1:-1;
+      let o=seg(x,y,z, s*0.166,0.330,0.006, s*0.166,1.215,0, 0.128,0.172);
+      o=smin(o, ell(x,y,z, s*0.166,0.660,-0.032, 0.138,0.205,0.150), 0.12);
+      /* elasticated cuff at the ankle */
+      o=smin(o, ell(x,y,z, s*0.166,0.336,0.010, 0.126,0.062,0.126), 0.05);
+      o=smax(o, 0.318-y, 0.03);
+      if(o<d) d=o;
+    }
+    return smax(d, y-1.235, 0.04);
+  }
+  /* ---------- sneakers ---------- */
+  function fShoe(x,y,z){
+    const gd=slab(y,0.00,0.34);
+    if(gd>0.28) return gd;
+    let d=1e9;
+    for(let i=0;i<2;i++){ const s=i?1:-1;
+      let o=ell(x,y,z, s*0.168,0.192,0.070, 0.136,0.120,0.214);
+      o=smin(o, ell(x,y,z, s*0.168,0.142,0.214, 0.126,0.080,0.132), 0.07);
+      if(o<d) d=o;
+    }
+    return d;
+  }
+  function fSole(x,y,z){
+    const gd=slab(y,0.00,0.14);
+    if(gd>0.26) return gd;
+    let d=1e9;
+    for(let i=0;i<2;i++){ const s=i?1:-1;
+      const o=rbox(x,y,z, s*0.168,0.064,0.098, 0.130,0.042,0.248, 0.038);
+      if(o<d) d=o;
+    }
+    return d;
+  }
+
+  function field(x,y,z){
+    let d=smin(fSkin(x,y,z), fHood(x,y,z), 0.026);
+    d=smin(d, fPants(x,y,z), 0.024);
+    d=smin(d, fHair(x,y,z), 0.030);
+    d=smin(d, fAcc(x,y,z), 0.022);
+    d=smin(d, fShoe(x,y,z), 0.028);
+    d=smin(d, fSole(x,y,z), 0.024);
+    return d;
+  }
+
+  /* colour / roughness / translucency per group. `tint` says how much of the
+     player's strongest-stat colour washes into that material. */
+  const GROUPS=[
+    {f:fSkin, col:CC("#EEBB90"), rough:0.62, sss:1.0, tint:0.00},
+    {f:fHair, col:CC("#45352C"), rough:0.70, sss:0.10,tint:0.00},
+    {f:fHood, col:CC("#CBBDF2"), rough:0.90, sss:0.05,tint:0.50},
+    {f:fAcc,  col:CC("#A9DCC8"), rough:0.90, sss:0.05,tint:0.22},
+    {f:fPants,col:CC("#3F5F92"), rough:0.94, sss:0.03,tint:0.07},
+    {f:fShoe, col:CC("#FBFBFB"), rough:0.60, sss:0.03,tint:0.00},
+    {f:fSole, col:CC("#9FD8C4"), rough:0.55, sss:0.00,tint:0.00}
+  ];
+  /* ================= the face =================
+     Painted into a canvas and projected flat onto the front of the head, so the
+     eyes, brows and mouth stay crisp no matter how coarse the mesh is. */
+  const FX0=-0.40, FW=0.80, FY1=2.76, FH=0.58;
+  const FU=x=>(x-FX0)/FW, FV=y=>(FY1-y)/FH;
+
+  const faceTex=(function(){
+    const S=512, cv=document.createElement("canvas");
+    cv.width=cv.height=S;
+    const c=cv.getContext("2d");
+    const px=x=>FU(x)*S, py=y=>FV(y)*S;
+    const sx=w=>w/FW*S, sy=h=>h/FH*S;
+    const ell=(cx,cy,rx,ry,rot)=>{ c.beginPath();
+      c.ellipse(cx,cy,rx,ry,rot||0,0,6.2832); c.fill(); };
+
+    /* ---- cheeks: a warm flush, not make-up ---- */
+    [-1,1].forEach(s=>{
+      const bx=px(s*0.298), by=py(2.318);
+      const g=c.createRadialGradient(bx,by,1,bx,by,sx(0.100));
+      g.addColorStop(0,"rgba(222,124,104,.20)"); g.addColorStop(1,"rgba(222,124,104,0)");
+      c.fillStyle=g; c.fillRect(bx-90,by-70,180,140);
+    });
+
+    /* ---- brows: light, thin, unfussy ---- */
+    [-1,1].forEach(s=>{
+      const cx=px(s*0.170), cy=py(2.586);
+      c.save(); c.translate(cx,cy); c.rotate(s*-0.07);
+      c.fillStyle="#3B2A1D";
+      c.beginPath();
+      c.moveTo(-sx(0.086), sy(0.004));
+      c.quadraticCurveTo(0,-sy(0.012), sx(0.084), sy(0.002));
+      c.quadraticCurveTo(0, sy(0.008), -sx(0.086), sy(0.020));
+      c.closePath(); c.fill();
+      c.restore();
+    });
+
+    /* ---- eyes: simple dark ovals with a glint, the way the reference reads ---- */
+    [-1,1].forEach(s=>{
+      const cx=px(s*0.170), cy=py(2.478);
+      const rx=sx(0.066), ry=sy(0.070);
+      /* a whisper of socket so the eye sits in the face */
+      const sg=c.createRadialGradient(cx,cy,ry*0.6,cx,cy,ry*2.0);
+      sg.addColorStop(0,"rgba(178,124,94,.20)"); sg.addColorStop(1,"rgba(178,124,94,0)");
+      c.fillStyle=sg; ell(cx,cy,rx*2.0,ry*2.0);
+      /* the eye itself */
+      c.fillStyle="#241A1C"; ell(cx,cy,rx,ry);
+      /* warmth at the bottom, so it is not a flat black hole */
+      const wg=c.createRadialGradient(cx,cy+ry*0.45,ry*0.05,cx,cy+ry*0.4,ry*0.85);
+      wg.addColorStop(0,"rgba(120,66,34,.55)"); wg.addColorStop(1,"rgba(120,66,34,0)");
+      c.fillStyle=wg; ell(cx,cy,rx,ry);
+      /* glint */
+      c.fillStyle="rgba(255,255,255,.96)";
+      ell(cx-s*rx*0.30, cy-ry*0.34, rx*0.32, ry*0.30, -0.5);
+      c.fillStyle="rgba(255,255,255,.55)";
+      ell(cx+s*rx*0.34, cy+ry*0.34, rx*0.15, ry*0.14);
+    });
+
+    /* ---- nose: shadow under the tip, nostrils, bridge light ---- */
+    (function(){
+      const nx=px(0), ny=py(2.392);
+      const g=c.createRadialGradient(nx,ny+sy(0.008),1,nx,ny+sy(0.006),sx(0.070));
+      g.addColorStop(0,"rgba(140,74,42,.55)"); g.addColorStop(1,"rgba(140,74,42,0)");
+      c.fillStyle=g; c.fillRect(nx-80,ny-46,160,100);
+      c.fillStyle="rgba(66,32,18,.72)";
+      ell(nx-sx(0.024), ny+sy(0.004), sx(0.012), sy(0.008), 0.35);
+      ell(nx+sx(0.024), ny+sy(0.004), sx(0.012), sy(0.008), -0.35);
+      const hg=c.createLinearGradient(nx,py(2.520),nx,py(2.400));
+      hg.addColorStop(0,"rgba(255,240,226,0)"); hg.addColorStop(1,"rgba(255,240,226,.40)");
+      c.fillStyle=hg; ell(nx,py(2.456),sx(0.019),sy(0.052));
+    })();
+
+    /* ---- mouth: a small closed smile ---- */
+    (function(){
+      const mx=px(0), my=py(2.300), w=sx(0.070), h=sy(0.030);
+      c.strokeStyle="#6E3138"; c.lineWidth=sy(0.014); c.lineCap="round";
+      c.beginPath();
+      c.moveTo(mx-w, my-h*0.10);
+      c.quadraticCurveTo(mx, my+h*1.55, mx+w, my-h*0.10);
+      c.stroke();
+      /* the faintest lower lip, so the smile has a little volume */
+      const lg=c.createLinearGradient(mx,my+h*1.2,mx,my+h*2.6);
+      lg.addColorStop(0,"rgba(196,116,100,.26)"); lg.addColorStop(1,"rgba(196,116,100,0)");
+      c.fillStyle=lg;
+      c.beginPath(); c.ellipse(mx,my+h*1.7,w*0.78,h*0.72,0,0,6.2832); c.fill();
+    })();
+
+    const t=new THREE.CanvasTexture(cv);
+    if("encoding" in t) t.encoding=THREE.sRGBEncoding;
+    t.flipY=false;              /* our V already runs top-down */
+    t.generateMipmaps=false;    /* mip blur was eating the eyes */
+    t.minFilter=THREE.LinearFilter;
+    t.anisotropy=4;
+    return t;
+  })();
+  /* ---- naive surface nets, run in slices so the page never stalls ---- */
+  const BMIN=[-0.80,-0.10,-0.60], BMAX=[0.80,3.38,0.62];
+  const CX8=new Int8Array([0,1,0,1,0,1,0,1]),
+        CY8=new Int8Array([0,0,1,1,0,0,1,1]),
+        CZ8=new Int8Array([0,0,0,0,1,1,1,1]);
+  const EA=new Int8Array([0,0,0,1,1,2,2,3,4,4,5,6]),
+        EB=new Int8Array([1,2,4,3,5,3,6,7,5,6,7,7]);
+
+  const gradAt=(x,y,z,h,o)=>{
+    const gx=field(x+h,y,z)-field(x-h,y,z);
+    const gy=field(x,y+h,z)-field(x,y-h,z);
+    const gz=field(x,y,z+h)-field(x,y,z-h);
+    const l=Math.sqrt(gx*gx+gy*gy+gz*gz)||1e-9;
+    o[0]=gx/l; o[1]=gy/l; o[2]=gz/l;
+  };
+
+  
+  let geo=null, figure=null, VN=0, COL=null, COL0=null, wShirt=null, AO=null;
+  let pendingTint=null;
+
+  function* buildAt(st){
+    const nx=Math.ceil((BMAX[0]-BMIN[0])/st)+1,
+          ny=Math.ceil((BMAX[1]-BMIN[1])/st)+1,
+          nz=Math.ceil((BMAX[2]-BMIN[2])/st)+1;
+    /* coarse pass so samples far from the surface are skipped */
+    const cx=(nx>>1)+2, cy=(ny>>1)+2, cz=(nz>>1)+2;
+    const coarse=new Float32Array(cx*cy*cz);
+    for(let k=0;k<cz;k++){
+      for(let j=0;j<cy;j++){ const row=(k*cy+j)*cx;
+        for(let i=0;i<cx;i++)
+          coarse[row+i]=field(BMIN[0]+i*2*st,BMIN[1]+j*2*st,BMIN[2]+k*2*st); }
+      yield;
+    }
+    const FAR=2.4*st;
+    const g=new Float32Array(nx*ny*nz);
+    for(let k=0;k<nz;k++){ const kc=Math.min(cz-1,k>>1), z=BMIN[2]+k*st;
+      for(let j=0;j<ny;j++){ const jc=Math.min(cy-1,j>>1), y=BMIN[1]+j*st,
+            row=(k*ny+j)*nx, crow=(kc*cy+jc)*cx;
+        for(let i=0;i<nx;i++){
+          const c=coarse[crow+Math.min(cx-1,i>>1)];
+          g[row+i]=(c>FAR||c<-FAR)?c:field(BMIN[0]+i*st,y,z);
+        }}
+      yield;
+    }
+
+    const mx=nx-1,my=ny-1,mz=nz-1;
+    const vid=new Int32Array(mx*my*mz).fill(-1);
+    const off=new Int32Array(8);
+    for(let c=0;c<8;c++) off[c]=(CZ8[c]*ny+CY8[c])*nx+CX8[c];
+    const pos=[], cv=new Float64Array(8);
+    for(let k=0;k<mz;k++){
+      for(let j=0;j<my;j++){
+        let base=(k*ny+j)*nx, vb=(k*my+j)*mx;
+        for(let i=0;i<mx;i++,base++){
+          let neg=0;
+          for(let c=0;c<8;c++){ const v=g[base+off[c]]; cv[c]=v; if(v<0) neg++; }
+          if(neg===0||neg===8) continue;
+          let sx=0,sy=0,sz=0,n=0;
+          for(let e=0;e<12;e++){
+            const a=EA[e], b=EB[e], va=cv[a], vb2=cv[b];
+            if((va<0)===(vb2<0)) continue;
+            const t=va/(va-vb2);
+            sx+=CX8[a]+(CX8[b]-CX8[a])*t;
+            sy+=CY8[a]+(CY8[b]-CY8[a])*t;
+            sz+=CZ8[a]+(CZ8[b]-CZ8[a])*t; n++;
+          }
+          vid[vb+i]=pos.length/3;
+          pos.push(BMIN[0]+(i+sx/n)*st, BMIN[1]+(j+sy/n)*st, BMIN[2]+(k+sz/n)*st);
+        }
+      }
+      if((k&1)===0) yield;
+    }
+
+    const idx=[];
+    for(let k=1;k<mz;k++){
+      for(let j=1;j<my;j++){
+        let base=(k*ny+j)*nx;
+        for(let i=1;i<mx;i++){
+          const s0=g[base+i]<0, v000=vid[(k*my+j)*mx+i];
+          if(s0!==(g[base+i+1]<0)){
+            const a=vid[((k-1)*my+j-1)*mx+i], b=vid[((k-1)*my+j)*mx+i],
+                  c=v000,                     d2=vid[(k*my+j-1)*mx+i];
+            if(a>=0&&b>=0&&c>=0&&d2>=0){ if(s0) idx.push(a,b,c,a,c,d2); else idx.push(a,c,b,a,d2,c); }
+          }
+          if(s0!==(g[base+nx+i]<0)){
+            const a=vid[((k-1)*my+j)*mx+i-1], b=vid[((k-1)*my+j)*mx+i],
+                  c=v000,                     d2=vid[(k*my+j)*mx+i-1];
+            if(a>=0&&b>=0&&c>=0&&d2>=0){ if(s0) idx.push(a,c,b,a,d2,c); else idx.push(a,b,c,a,c,d2); }
+          }
+          if(s0!==(g[base+ny*nx+i]<0)){
+            const a=vid[(k*my+j-1)*mx+i-1], b=vid[(k*my+j-1)*mx+i],
+                  c=v000,                   d2=vid[(k*my+j)*mx+i-1];
+            if(a>=0&&b>=0&&c>=0&&d2>=0){ if(s0) idx.push(a,b,c,a,c,d2); else idx.push(a,c,b,a,d2,c); }
+          }
+        }
+      }
+      if((k&1)===0) yield;
+    }
+
+    const P=new Float32Array(pos), N=P.length/3, IDX=idx;
+    const NRM=new Float32Array(P.length);
+    yield;
+
+    /* one relaxation pass over the triangle graph */
+    {
+      const acc=new Float32Array(P.length), cnt=new Float32Array(N);
+      const bump=(a,b)=>{ acc[a*3]+=P[b*3]; acc[a*3+1]+=P[b*3+1]; acc[a*3+2]+=P[b*3+2]; cnt[a]++; };
+      for(let t=0;t<IDX.length;t+=3){
+        const a=IDX[t],b=IDX[t+1],c=IDX[t+2];
+        bump(a,b);bump(a,c);bump(b,a);bump(b,c);bump(c,a);bump(c,b);
+        if((t%30000)===0) yield;
+      }
+      for(let v=0;v<N;v++){ const n=cnt[v]; if(!n) continue;
+        if((v&4095)===0) yield;
+        P[v*3]  +=0.55*(acc[v*3]/n  -P[v*3]);
+        P[v*3+1]+=0.55*(acc[v*3+1]/n-P[v*3+1]);
+        P[v*3+2]+=0.55*(acc[v*3+2]/n-P[v*3+2]);
+      }
+    }
+    yield;
+
+    /* snap each vertex onto the exact isosurface; keep the gradient as normal */
+    {
+      const o=[0,0,0], h=st*0.48;
+      for(let v=0;v<N;v++){
+        const x=P[v*3],y=P[v*3+1],z=P[v*3+2], d=field(x,y,z);
+        gradAt(x,y,z,h,o);
+        P[v*3]=x-o[0]*d; P[v*3+1]=y-o[1]*d; P[v*3+2]=z-o[2]*d;
+        NRM[v*3]=o[0]; NRM[v*3+1]=o[1]; NRM[v*3+2]=o[2];
+        if((v&255)===0) yield;
+      }
+    }
+
+    /* make sure triangles wind outward */
+    { let vote=0;
+      for(let t=0;t<IDX.length && t<3000;t+=3){
+        const a=IDX[t]*3,b=IDX[t+1]*3,c=IDX[t+2]*3;
+        const ux=P[b]-P[a],uy=P[b+1]-P[a+1],uz=P[b+2]-P[a+2];
+        const vx=P[c]-P[a],vy=P[c+1]-P[a+1],vz=P[c+2]-P[a+2];
+        vote += ((uy*vz-uz*vy)*NRM[a]+(uz*vx-ux*vz)*NRM[a+1]+(ux*vy-uy*vx)*NRM[a+2])>0 ? 1 : -1;
+      }
+      if(vote<0) for(let t=0;t<IDX.length;t+=3){ const s=IDX[t+1]; IDX[t+1]=IDX[t+2]; IDX[t+2]=s; }
+    }
+    yield;
+    /* paint every material group: colour, soft occlusion, per-vertex roughness,
+       and how much light scatters through (skin glows at the edges, cloth does not) */
+    const c1=new Float32Array(P.length), c0=new Float32Array(P.length);
+    const ao=new Float32Array(N), rg=new Float32Array(N), sk=new Float32Array(N);
+    const tw=new Float32Array(N), fuv=new Float32Array(N*2), fw=new Float32Array(N);
+    const G=GROUPS, NG=G.length;
+    { const EPS=0.012, d=new Float64Array(NG), w=new Float64Array(NG);
+      for(let v=0;v<N;v++){
+        const x=P[v*3],y=P[v*3+1],z=P[v*3+2];
+        let occ=0, sca=1;
+        for(let i=1;i<=4;i++){
+          const h=0.016+0.052*i;
+          occ+=(h-field(x+NRM[v*3]*h, y+NRM[v*3+1]*h, z+NRM[v*3+2]*h))*sca;
+          sca*=0.74;
+        }
+        /* gentle occlusion only — this is a bright toy, not a lit interior */
+        let a=0.66+0.34*Math.max(0,Math.min(1,1-2.2*occ));
+        const n=Math.sin(x*93.7+y*57.3+z*131.1)*0.5+0.5;
+        a*=0.99+n*0.02;
+        ao[v]=a;
+        let dm=1e9;
+        for(let q=0;q<NG;q++){ const t=G[q].f(x,y,z); d[q]=t; if(t<dm) dm=t; }
+        let sum=0;
+        for(let q=0;q<NG;q++){ w[q]=Math.exp(-(d[q]-dm)/EPS); sum+=w[q]; }
+        let r=0,gg=0,b=0,ro=0,skn=0,tnt=0;
+        for(let q=0;q<NG;q++){ const t=w[q]/sum, gq=G[q];
+          r+=gq.col.r*t; gg+=gq.col.g*t; b+=gq.col.b*t;
+          ro+=gq.rough*t; skn+=gq.sss*t; tnt+=gq.tint*t;
+        }
+        /* where the painted face decal lands */
+        const u=FU(x), vv=FV(y);
+        fuv[v*2]=u; fuv[v*2+1]=vv;
+        let w2=0;
+        if(u>0&&u<1&&vv>0&&vv<1&&skn>0.35){
+          const nz=NRM[v*3+2];
+          w2=skn*Math.max(0,Math.min(1,(nz-0.12)/0.34));
+          const e=Math.min(u,1-u,vv,1-vv);
+          w2*=Math.max(0,Math.min(1,e/0.05));
+        }
+        fw[v]=w2;
+        sk[v]=skn; tw[v]=tnt;
+        rg[v]=ro*(0.95+n*0.10);
+        c1[v*3]=r*a; c1[v*3+1]=gg*a; c1[v*3+2]=b*a;
+        if((v&255)===0) yield;
+      }
+      c0.set(c1);
+    }
+
+    /* swap the finished mesh in */
+    const ng=new THREE.BufferGeometry();
+    ng.setAttribute("position",new THREE.BufferAttribute(P,3));
+    ng.setAttribute("normal",new THREE.BufferAttribute(NRM,3));
+    ng.setAttribute("color",new THREE.BufferAttribute(c1,3));
+    ng.setAttribute("aRough",new THREE.BufferAttribute(rg,1));
+    ng.setAttribute("aSkin",new THREE.BufferAttribute(sk,1));
+    ng.setAttribute("aFaceUV",new THREE.BufferAttribute(fuv,2));
+    ng.setAttribute("aFaceW",new THREE.BufferAttribute(fw,1));
+    ng.setAttribute("aAO",new THREE.BufferAttribute(ao,1));
+    ng.setIndex(IDX);
+    ng.translate(0,GROUND_DROP,0);
+    ng.computeBoundingSphere();
+    if(figure){ root.remove(figure); geo.dispose(); }
+    figure=new THREE.Mesh(ng,FIG);
+    figure.castShadow=true; figure.receiveShadow=true; root.add(figure);
+    geo=ng; VN=N; COL=c1; COL0=c0; wShirt=tw; AO=ao;
+    if(pendingTint){ const t=pendingTint; pendingTint=null; applyTint(t); }
+  }
+  /* one material for the whole figure; roughness, translucency and the painted
+     face all ride along as vertex attributes, so cloth stays matte, skin glows
+     at the edges, and the face decal stays crisp on a coarse mesh */
+  const FIG=new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.7,
+    metalness:0,envMapIntensity:0.55});
+  FIG.onBeforeCompile=(sh)=>{
+    sh.uniforms.uSSS={value:CC("#D97A52")};
+    sh.uniforms.uFace={value:faceTex};
+    sh.vertexShader=
+      "attribute float aRough;\nattribute float aSkin;\n"+
+      "attribute vec2 aFaceUV;\nattribute float aFaceW;\nattribute float aAO;\n"+
+      "varying float vRough;\nvarying float vSkin;\n"+
+      "varying vec2 vFUV;\nvarying float vFW;\nvarying float vAO;\n"+
+      sh.vertexShader.replace("#include <begin_vertex>",
+        "#include <begin_vertex>\n  vRough=aRough;\n  vSkin=aSkin;\n"+
+        "  vFUV=aFaceUV;\n  vFW=aFaceW;\n  vAO=aAO;");
+    sh.fragmentShader=
+      "uniform vec3 uSSS;\nuniform sampler2D uFace;\n"+
+      "varying float vRough;\nvarying float vSkin;\n"+
+      "varying vec2 vFUV;\nvarying float vFW;\nvarying float vAO;\n"+
+      sh.fragmentShader
+      .replace("#include <color_fragment>",
+        "#include <color_fragment>\n"+
+        "  if(vFW > 0.001){\n"+
+        "    vec4 fc = texture2D(uFace, vFUV);\n"+
+        "    diffuseColor.rgb = mix(diffuseColor.rgb, fc.rgb * vAO, fc.a * vFW);\n"+
+        "  }")
+      .replace("#include <roughnessmap_fragment>",
+        "#include <roughnessmap_fragment>\n  roughnessFactor = clamp(vRough,0.04,1.0);")
+      .replace("#include <dithering_fragment>",
+        "#include <dithering_fragment>\n"+
+        "  float ndv = 1.0 - abs(dot(normalize(vNormal), normalize(vViewPosition)));\n"+
+        "  gl_FragColor.rgb += uSSS * vSkin * pow(ndv, 2.8) * 0.22;");
+  };
+  FIG.customProgramCacheKey=()=>"kidv2";
+
+  /* the strongest stat washes gently through the clothes */
+  function applyTint(hex){
+    if(!geo){ pendingTint=hex; return; }
+    const c=CC(hex);
+    for(let v=0;v<VN;v++){
+      const t=wShirt[v]*0.5, a=AO[v];
+      COL[v*3]  =COL0[v*3]  +(c.r*a-COL0[v*3])  *t;
+      COL[v*3+1]=COL0[v*3+1]+(c.g*a-COL0[v*3+1])*t;
+      COL[v*3+2]=COL0[v*3+2]+(c.b*a-COL0[v*3+2])*t;
+    }
+    geo.attributes.color.needsUpdate=true;
+  }
+
+  /* a rough pass appears almost at once, then the fine mesh replaces it */
+  (function(){
+    function* all(){ yield* buildAt(0.044); yield; yield* buildAt(0.021); }
+    const it=all();
+    const pump=()=>{ const t0=performance.now();
+      let r; do{ r=it.next(); }while(!r.done && performance.now()-t0<11);
+      if(!r.done) requestAnimationFrame(pump);
+    };
+    requestAnimationFrame(pump);
+  })();
   let rot=0, target=0, drag=false, lastX=0, touched=false;
   const norm=a=>((a%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
-  cvs.addEventListener("pointerdown",e=>{drag=true;lastX=e.clientX;touched=true;cvs.setPointerCapture(e.pointerId);});
-  cvs.addEventListener("pointermove",e=>{ if(!drag) return; target+=(e.clientX-lastX)*0.012; lastX=e.clientX; });
+  cvs.addEventListener("pointerdown",e=>{drag=true;lastX=e.clientX;touched=true;
+    cvs.setPointerCapture(e.pointerId);});
+  cvs.addEventListener("pointermove",e=>{ if(!drag) return;
+    target+=(e.clientX-lastX)*0.012; lastX=e.clientX; });
   const up=()=>drag=false;
   cvs.addEventListener("pointerup",up); cvs.addEventListener("pointercancel",up);
-  cvs.addEventListener("wheel",e=>{ e.preventDefault(); target+=e.deltaY*0.004; touched=true; },{passive:false});
-  [...document.querySelectorAll(".vbtn")].forEach(b=>b.addEventListener("click",()=>{
+  cvs.addEventListener("wheel",e=>{ e.preventDefault(); target+=e.deltaY*0.004; touched=true; },
+    {passive:false});
+  const vbtns=[...document.querySelectorAll(".vbtn")];
+  vbtns.forEach(b=>b.addEventListener("click",()=>{
     const want=+b.dataset.a*Math.PI/180;
     target=Math.round((target-want)/(Math.PI*2))*(Math.PI*2)+want; touched=true;
   }));
-  const vbtns=[...document.querySelectorAll(".vbtn")];
   const resize=()=>{ const r=cvs.parentElement.getBoundingClientRect();
     if(r.width<2) return;
     R.setSize(r.width,r.height,false);
     cam.aspect=r.width/r.height; cam.updateProjectionMatrix();
-    const fit = r.width<340 ? 8.6 : 7.8;
-    cam.position.set(0,1.62,fit); cam.lookAt(0,1.45,0); };
+    const a=r.width/r.height;
+    const fit = a<0.72 ? 9.9 : a<1.0 ? 9.1 : 8.5;
+    cam.position.set(0,1.86,fit); cam.lookAt(0,1.52,0); };
   addEventListener("resize",resize); setTimeout(resize,0);
 
+  let nowSec=0, popAt=-9, popPower=1, spinOn=true;
   return {
-    tint(hex){ SHIRT.color.set(hex); },
+    pop(power){ popAt=nowSec; popPower=power||1; },
+    tint(hex){ applyTint(hex); },
+    setSet(p){ repaintSet(p); },
+    setSpin(v){ spinOn=!!v; },
+    setTheme(t){
+      R.toneMappingExposure = t==="dark" ? 0.92 : 1.04;
+      HEMI.intensity = t==="dark" ? 0.26 : 0.34;
+    },
     draw(sec){
       const r=cvs.getBoundingClientRect();
-      if(r.right<0||r.left>innerWidth||r.width<2) return;
+      if(r.bottom<0||r.top>innerHeight||r.right<0||r.left>innerWidth||r.width<2) return;
       if(!R.domElement.width||Math.abs(R.domElement.clientWidth-r.width)>1) resize();
-      if(!touched) target+=0.0035;
+      if(!touched && spinOn) target+=0.0032;
       rot+=(target-rot)*0.12;
       root.rotation.y=rot;
-      root.position.y=Math.sin(sec*1.7)*0.028;
-      head.rotation.z=Math.sin(sec*1.1)*0.025;
+      nowSec=sec;
+      const bob=Math.sin(sec*1.7);
+      let sx=1+bob*0.007, sy=1-bob*0.009;
+      root.position.y=bob*0.026;
+      root.rotation.z=Math.sin(sec*0.9)*0.012;
+      const pd=sec-popAt, PD=0.55*popPower;
+      if(pd>=0&&pd<PD){
+        const k=pd/PD, e=Math.sin(k*Math.PI), sq=Math.sin(k*Math.PI*2);
+        root.position.y+=e*0.20*popPower;
+        root.rotation.z+=Math.sin(k*Math.PI*2)*0.06*popPower;
+        sx+=sq*0.05; sy-=sq*0.06;
+      }
+      root.scale.set(sx,sy,sx);
       const a=norm(rot), deg=a*180/Math.PI;
-      const near=[0,90,180,270].reduce((p,c)=>Math.abs(((deg-c+540)%360)-180)>Math.abs(((deg-p+540)%360)-180)?p:c);
-      vbtns.forEach(b=>b.setAttribute("aria-current", (+b.dataset.a===near)?"true":"false"));
+      const near=[0,90,180,270].reduce((p,c)=>
+        Math.abs(((deg-c+540)%360)-180)>Math.abs(((deg-p+540)%360)-180)?p:c);
+      vbtns.forEach(b=>b.setAttribute("aria-current",(+b.dataset.a===near)?"true":"false"));
       R.render(scene,cam);
     }
   };
 }
 
-/* ---------- card interior: gradient waves ---------- */
-const MOBILE = matchMedia("(max-width:800px)").matches;
-const STILL  = matchMedia("(prefers-reduced-motion:reduce)").matches;
-const S_PAGE = MOBILE ? 0.60 : 0.85;
-const S_CARD = MOBILE ? 0.55 : 0.80;
-const hexRgb = h => [1,3,5].map(i=>parseInt(h.substr(i,2),16)/255);
-
-const CARD_PALETTE = {
-  light:{ horizon:"#FFFFFF", wave:"#5C7DFF", crest:"#FFB0E0", opacity:0.42, brightness:1.02 },
-  dark:{  horizon:"#3A1E8C", wave:"#5227FF", crest:"#FF9FFC", opacity:0.62, brightness:1.0 }
+/* ---------- design presets ---------- */
+const THEMES = {
+  meadow:{
+    name:"Meadow", note:"Mint & sky",
+    swatch:["#B6ECD6","#8FDCEA","#2FBFA8","#FFC94D"],
+    vars:{ "--sky-1":"#B6ECD6","--sky-2":"#8FDCEA","--sky-3":"#7FD3E8",
+      "--panel":"#D6F3E2","--panel-2":"#EAFBF1","--card":"#FFFFFF","--card-2":"#F2FCF6",
+      "--ink":"#22463F","--ink-2":"#3E6B62","--muted":"#6E9990",
+      "--line":"rgba(34,70,63,.10)","--line-2":"rgba(34,70,63,.16)",
+      "--teal":"#2FBFA8","--teal-d":"#1FA791","--ok":"#3FC79E",
+      "--xp-a":"#FF9BB3","--xp-b":"#FFC0A0","--xp-c":"#FFD98A","--xp-ink":"#8A4B57" },
+    darkVars:{ "--sky-1":"#12332F","--sky-2":"#123A44","--sky-3":"#0E2F3B",
+      "--panel":"#173C38","--panel-2":"#12332F","--card":"#1B4440","--card-2":"#173B38",
+      "--ink":"#E6FBF3","--ink-2":"#B7DDD3","--muted":"#7FAFA5" },
+    stats:{STR:"#FF9E7A",INT:"#6FA8F5",DEX:"#C08BF0",VIT:"#FF8FA3",WIS:"#FFC24D"},
+    radar:["#FFE9A8","#9FE6D6","#8FBCF5","#5FCFC0"],
+    set:{ pod:"#4FB566", podTop:"#6ECC80", hillFar:"#6FBE7B", hillNear:"#83CB8C",
+      leaf:"#46A85E", bush:"#54B76C", trunk:"#9C6A44",
+      sky:["#8FD8F0","#BDECF7","#E6F8F2"], grass:"#62BE73",
+      grassA:"rgba(84,166,98,.28)", grassB:"rgba(126,204,140,.28)" }
+  },
+  terracotta:{
+    name:"Terracotta", note:"Cream & clay",
+    swatch:["#FBF3E9","#F3D9C2","#C4634A","#4A90D9"],
+    vars:{ "--sky-1":"#FBF3E9","--sky-2":"#F7E7D6","--sky-3":"#FAEDE0",
+      "--panel":"#FAF0E4","--panel-2":"#FDF7EF","--card":"#FFFBF5","--card-2":"#FDF4EA",
+      "--ink":"#5A3A2E","--ink-2":"#8A5C46","--muted":"#A98671",
+      "--line":"rgba(160,105,75,.16)","--line-2":"rgba(160,105,75,.26)",
+      "--teal":"#C4634A","--teal-d":"#A94E38","--ok":"#4A90D9",
+      "--xp-a":"#5AA9E6","--xp-b":"#4FBFC0","--xp-c":"#5FD3B4","--xp-ink":"#F6FBFF" },
+    darkVars:{ "--sky-1":"#2A1C16","--sky-2":"#33221A","--sky-3":"#2E1F18",
+      "--panel":"#3A281F","--panel-2":"#2E1F18","--card":"#412D23","--card-2":"#38261D",
+      "--ink":"#F7E7D8","--ink-2":"#D9B79E","--muted":"#A9836A" },
+    stats:{STR:"#D9694C",INT:"#4A90D9",DEX:"#C08BC0",VIT:"#E8895E",WIS:"#E0A94A"},
+    radar:["#FBE3C8","#BFE0DC","#A9C6E8","#5E9AA8"],
+    set:{ pod:"#C4735A", podTop:"#D98A6E", hillFar:"#E3C3A4", hillNear:"#EDD5BC",
+      leaf:"#B08768", bush:"#C09A79", trunk:"#8A5A3E",
+      sky:["#F6DCC4","#FAEADA","#FDF6EE"], grass:"#E7CBAE",
+      grassA:"rgba(198,160,128,.30)", grassB:"rgba(243,220,196,.30)" }
+  },
+  dusk:{
+    name:"Dusk", note:"Violet & rose",
+    swatch:["#EDE7FB","#DCD3F6","#7C5CE0","#FF8FB0"],
+    vars:{ "--sky-1":"#EDE7FB","--sky-2":"#DCE4F8","--sky-3":"#E4DBFA",
+      "--panel":"#E9E2FA","--panel-2":"#F6F2FE","--card":"#FFFFFF","--card-2":"#F7F4FE",
+      "--ink":"#332A50","--ink-2":"#5A4E7E","--muted":"#8A80AC",
+      "--line":"rgba(60,48,100,.12)","--line-2":"rgba(60,48,100,.20)",
+      "--teal":"#7C5CE0","--teal-d":"#6746C6","--ok":"#7C5CE0",
+      "--xp-a":"#FF8FB0","--xp-b":"#C79BF0","--xp-c":"#8FB8FF","--xp-ink":"#4A2B52" },
+    darkVars:{ "--sky-1":"#191430","--sky-2":"#1D1838","--sky-3":"#171232",
+      "--panel":"#241E44","--panel-2":"#191430","--card":"#2A2350","--card-2":"#241E44",
+      "--ink":"#EFEAFF","--ink-2":"#C3B9E8","--muted":"#8F85B8" },
+    stats:{STR:"#FF8FA3",INT:"#8FB8FF",DEX:"#C79BF0",VIT:"#FFA8C4",WIS:"#FFD27A"},
+    radar:["#FFDCEA","#DCC9F8","#B8CCFA","#8F72E0"],
+    set:{ pod:"#7C5CE0", podTop:"#9578EC", hillFar:"#B7A8E8", hillNear:"#CCC0F2",
+      leaf:"#8F72E0", bush:"#A28CE8", trunk:"#6B5296",
+      sky:["#C3B4F2","#DDD6FA","#F1ECFE"], grass:"#B0A0E4",
+      grassA:"rgba(140,120,210,.28)", grassB:"rgba(200,188,244,.28)" }
+  }
 };
+let themeName="meadow", mode="system", spin=true;
 
-const mouse = { nx:.5, ny:.5, px:0, py:0 };
-addEventListener("pointermove", e=>{
-  mouse.nx = e.clientX/innerWidth;
-  mouse.ny = 1 - e.clientY/innerHeight;
-  mouse.px = e.clientX; mouse.py = innerHeight - e.clientY;
-});
-
-function glLayer(canvas, frag){
-  const gl = canvas.getContext("webgl2",{alpha:true,premultipliedAlpha:true,antialias:false});
-  if(!gl) return null;
-  const sh=(t,x)=>{const o=gl.createShader(t);gl.shaderSource(o,x);gl.compileShader(o);return o;};
-  const p=gl.createProgram();
-  gl.attachShader(p,sh(gl.VERTEX_SHADER,VERT));
-  gl.attachShader(p,sh(gl.FRAGMENT_SHADER,frag));
-  gl.linkProgram(p);
-  if(!gl.getProgramParameter(p,gl.LINK_STATUS)){ console.warn(gl.getProgramInfoLog(p)); return null; }
-  gl.useProgram(p);
-  const cache={}, loc=n=>(n in cache?cache[n]:(cache[n]=gl.getUniformLocation(p,n)));
-  return {
-    gl,
-    f:(n,v)=>gl.uniform1f(loc(n),v),
-    i:(n,v)=>gl.uniform1i(loc(n),v),
-    v2:(n,a,b)=>gl.uniform2f(loc(n),a,b),
-    v3:(n,a,b,c)=>gl.uniform3f(loc(n),a,b,c),
-    rgb:(n,hex)=>gl.uniform3fv(loc(n),hexRgb(hex)),
-    size(w,h){ canvas.width=Math.max(1,w); canvas.height=Math.max(1,h); gl.viewport(0,0,canvas.width,canvas.height); },
-    render(){ gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES,0,3); }
-  };
+function currentMode(){
+  return mode==="system"
+    ? (matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")
+    : mode;
 }
-
-/* 카드 내부 = 그라디언트 웨이브 (한 번 렌더 → 카드별로 잘라 붙이기) */
-function initCards(){
-  const src=document.createElement("canvas");
-  const L=glLayer(src, FRAG); if(!L) return null;
-  L.f("uSpeed",0.4); L.f("uAmplitude",2.5); L.f("uWaveScale",0.6); L.f("uWaveRatio",0.9);
-  L.f("uSwell",35); L.f("uTurbulence",20); L.f("uTilt",1.11); L.f("uZoom",1.0);
-  L.f("uHeight",5.5); L.f("uFogDepth",15); L.f("uGrainIntensity",0.05); L.f("uParallax",0.5);
-  L.f("uSteps", MOBILE?40:70);
-  const resize=()=>{ const w=Math.floor(innerWidth*S_CARD), h=Math.floor(innerHeight*S_CARD);
-    L.size(w,h); L.v2("iResolution",w,h); };
-  addEventListener("resize",resize); resize();
-  const cards=[...document.querySelectorAll(".card")].map(el=>{
-    const cv=document.createElement("canvas"); cv.className="fx"; el.appendChild(cv);
-    return {el, cv, ctx:cv.getContext("2d"), w:0, h:0};
-  });
-  return {
-    paint(theme){ const t=CARD_PALETTE[theme];
-      L.rgb("uHorizonColor",t.horizon); L.rgb("uWaveColor",t.wave); L.rgb("uCrestColor",t.crest);
-      L.f("uOpacity",t.opacity); L.f("uBrightness",t.brightness); if(STILL) this.draw(0); },
-    draw(sec){
-      L.f("iTime",sec); L.v2("uMouse",mouse.nx,mouse.ny); L.render();
-      for(const c of cards){
-        const r=c.el.getBoundingClientRect();
-        if(r.bottom<0||r.top>innerHeight||r.right<0||r.left>innerWidth||r.width<2) continue;
-        const w=Math.max(1,Math.round(r.width*S_CARD)), h=Math.max(1,Math.round(r.height*S_CARD));
-        if(c.w!==w||c.h!==h){ c.cv.width=w; c.cv.height=h; c.w=w; c.h=h; }
-        c.ctx.clearRect(0,0,w,h);
-        c.ctx.drawImage(src, Math.round(r.left*S_CARD), Math.round(r.top*S_CARD), w, h, 0,0,w,h);
-      }
-    }
-  };
+function applyDesign(){
+  const t=THEMES[themeName]||THEMES.meadow, dark=currentMode()==="dark";
+  const r=document.documentElement;
+  r.setAttribute("data-theme",dark?"dark":"light");
+  Object.entries(t.vars).forEach(([k,v])=>r.style.setProperty(k,v));
+  if(dark) Object.entries(t.darkVars).forEach(([k,v])=>r.style.setProperty(k,v));
+  KEYS.forEach(k=>{ STATS[k].col=t.stats[k]; });
+  RADAR=t.radar;
+  if(char3d){ char3d.setTheme(dark?"dark":"light"); if(char3d.setSet) char3d.setSet(t.set); }
+  if(char3d && char3d.setSpin) char3d.setSpin(spin);
+  document.querySelectorAll(".theme").forEach(b=>
+    b.setAttribute("aria-pressed", b.dataset.t===themeName ? "true":"false"));
+  document.querySelectorAll("#modeSegs button").forEach(b=>
+    b.setAttribute("aria-pressed", b.dataset.mode===mode ? "true":"false"));
+  document.querySelectorAll("#spinSegs button").forEach(b=>
+    b.setAttribute("aria-pressed", (b.dataset.spin==="on")===spin ? "true":"false"));
 }
+let RADAR=THEMES.meadow.radar;
 
-/* ---------- game ---------- */
+function renderThemes(){
+  themeGrid.innerHTML=Object.entries(THEMES).map(([id,t])=>`
+    <button class="theme" data-t="${id}" aria-pressed="${id===themeName}">
+      <span class="swatch">${t.swatch.map(c=>`<i style="background:${c}"></i>`).join("")}</span>
+      <span class="meta"><b>${t.name}</b><span>${t.note}</span>
+        <span class="dot">✓</span></span>
+    </button>`).join("");
+}
+/* ---------- game model ---------- */
 const STATS = {
-  INT:{name:"Intellect", label:"Study",  light:"#1E6FC4", dark:"#8ACBFF"},
-  VIT:{name:"Vitality",  label:"Fitness",light:"#C93F26", dark:"#FF8E75"},
-  EXP:{name:"Discovery", label:"Travel", light:"#0A8460", dark:"#6BE9B6"},
-  SOC:{name:"Social",    label:"People", light:"#6B37D8", dark:"#CBA6FF"},
-  CRE:{name:"Creation",  label:"Create", light:"#A56D00", dark:"#FFD97A"}
+  STR:{name:"Strength",  emo:"🏋️", col:"#FF9E7A"},
+  INT:{name:"Intellect", emo:"📖", col:"#6FA8F5"},
+  DEX:{name:"Dexterity", emo:"👟", col:"#C08BF0"},
+  VIT:{name:"Vitality",  emo:"❤️", col:"#FF8FA3"},
+  WIS:{name:"Wisdom",    emo:"⭐", col:"#FFC24D"}
 };
+const KEYS=Object.keys(STATS);
 const BASE_QUESTS = [
-  {id:"q1", stat:"INT", name:"Read 20 pages", xp:15},
-  {id:"q2", stat:"INT", name:"Learn 30 new words", xp:20},
-  {id:"q3", stat:"INT", name:"Study for an hour", xp:25},
-  {id:"q4", stat:"VIT", name:"Walk 1 km", xp:10},
-  {id:"q5", stat:"VIT", name:"Play basketball 30 min", xp:25},
-  {id:"q6", stat:"VIT", name:"Strength training 30 min", xp:25},
-  {id:"q7", stat:"EXP", name:"Visit somewhere new", xp:30},
-  {id:"q8", stat:"EXP", name:"Walk one stop instead", xp:10},
-  {id:"q9", stat:"EXP", name:"Take a day trip", xp:50},
-  {id:"q10", stat:"SOC", name:"Meet a friend", xp:25},
-  {id:"q11", stat:"SOC", name:"Check in on someone", xp:10},
-  {id:"q12", stat:"SOC", name:"Talk to a stranger", xp:20},
-  {id:"q13", stat:"CRE", name:"Write something", xp:20},
-  {id:"q14", stat:"CRE", name:"Push a commit", xp:20},
-  {id:"q15", stat:"CRE", name:"Capture an idea", xp:10}
+  {id:"s1", stat:"STR", name:"Strength training 30 min", xp:25, emo:"🏋️"},
+  {id:"s2", stat:"STR", name:"Push-ups × 30",            xp:15, emo:"💪"},
+  {id:"s3", stat:"STR", name:"Carry the groceries",      xp:10, emo:"🛍️"},
+  {id:"i1", stat:"INT", name:"Do homework",              xp:25, emo:"✏️"},
+  {id:"i2", stat:"INT", name:"Read 30 mins",             xp:20, emo:"📙"},
+  {id:"i3", stat:"INT", name:"Learn 30 new words",       xp:20, emo:"🔤"},
+  {id:"d1", stat:"DEX", name:"Play a sport",             xp:25, emo:"⚽"},
+  {id:"d2", stat:"DEX", name:"Practise an instrument",   xp:20, emo:"🎸"},
+  {id:"d3", stat:"DEX", name:"Sketch for 15 min",        xp:15, emo:"🎨"},
+  {id:"v1", stat:"VIT", name:"Walk 1 km",                xp:10, emo:"🚶"},
+  {id:"v2", stat:"VIT", name:"Sleep 8 hours",            xp:20, emo:"😴"},
+  {id:"v3", stat:"VIT", name:"Drink 2 L of water",       xp:10, emo:"💧"},
+  {id:"w1", stat:"WIS", name:"Help clean",               xp:15, emo:"🧹"},
+  {id:"w2", stat:"WIS", name:"Check in on someone",      xp:10, emo:"💬"},
+  {id:"w3", stat:"WIS", name:"Write in a journal",       xp:20, emo:"📓"}
 ];
-const KEY="liferpg:v1", TKEY="liferpg:theme", DAILY_GOAL=100;
-let state={xp:0,stats:{INT:0,VIT:0,EXP:0,SOC:0,CRE:0},log:[],custom:[],days:[]};
-let tab="INT", theme="light", storageOK=true;
-const sc = k => STATS[k][theme];
+const KEY="liferpg:v2", OLD_KEY="liferpg:v1", TKEY="liferpg:design", DAILY_GOAL=100;
+const blank=()=>({xp:0,stats:{STR:0,INT:0,DEX:0,VIT:0,WIS:0},log:[],custom:[],days:[]});
+let state=blank();
+let tab="STR", storageOK=true, filter="";
+let cardFX=null, char3d=null;
+const sc = k => STATS[k].col;
 
-/* 저장소: 아티팩트에서는 window.storage, 일반 웹에서는 localStorage */
 const store = {
   async get(k){
     if(window.storage) return await window.storage.get(k);
@@ -581,21 +1402,39 @@ const store = {
   }
 };
 
+/* the old five stats map onto the new ones so nothing is lost */
+const MIGRATE={INT:"INT",VIT:"VIT",EXP:"DEX",SOC:"WIS",CRE:"STR"};
+function migrate(o){
+  const n=blank();
+  n.xp=o.xp||0;
+  for(const k in (o.stats||{})){ const t=MIGRATE[k]||k;
+    if(t in n.stats) n.stats[t]+=o.stats[k]||0; }
+  n.log=(o.log||[]).map(l=>Object.assign({},l,{stat:MIGRATE[l.stat]||l.stat}));
+  n.custom=(o.custom||[]).map(c=>Object.assign({},c,{stat:MIGRATE[c.stat]||c.stat}));
+  n.days=o.days||[];
+  return n;
+}
 async function load(){
-  try{ const r=await store.get(KEY); if(r&&r.value) state=Object.assign(state,JSON.parse(r.value)); }catch(e){}
-  try{ const t=await store.get(TKEY); if(t&&t.value) theme=t.value; }catch(e){}
-  applyTheme();
+  let got=false;
+  try{ const r=await store.get(KEY);
+    if(r&&r.value){ state=Object.assign(blank(),JSON.parse(r.value)); got=true; } }catch(e){}
+  if(!got){ try{ const r=await store.get(OLD_KEY);
+    if(r&&r.value) state=migrate(JSON.parse(r.value)); }catch(e){} }
+  try{ const t=await store.get(TKEY);
+    if(t&&t.value){ const d=JSON.parse(t.value);
+      if(d.theme in THEMES) themeName=d.theme;
+      if(d.mode) mode=d.mode;
+      if(typeof d.spin==="boolean") spin=d.spin; }
+  }catch(e){}
+  applyDesign();
 }
 async function save(){
   try{ await store.set(KEY,JSON.stringify(state)); }
   catch(e){ if(storageOK){ storageOK=false;
-    document.getElementById("warn").innerHTML='<div class="warn">Entries aren\'t being saved. They\'ll only last this session.</div>'; } }
+    document.getElementById("warn").innerHTML=
+      '<div class="warn">Entries aren\'t being saved — they\'ll only last this session.</div>'; } }
 }
-function applyTheme(){
-  document.documentElement.setAttribute("data-theme",theme);
-  document.getElementById("themeBtn").textContent = theme==="light" ? "🌙" : "☀️";
-  if(cardFX) cardFX.paint(theme);
-}
+const saveDesign=()=>{ try{ store.set(TKEY,JSON.stringify({theme:themeName,mode,spin})); }catch(e){} };
 
 const need = lv => 100+(lv-1)*60;
 function levelOf(xp){ let lv=1,rest=xp; while(rest>=need(lv)){ rest-=need(lv); lv++; } return {lv,rest,need:need(lv)}; }
@@ -611,205 +1450,263 @@ function streakDays(){
   for(const day of s){ if(day===iso(d)){ n++; d.setDate(d.getDate()-1);} else break; }
   return n;
 }
-
-function renderChar(){
-  const {lv,rest,need:n}=levelOf(state.xp);
-  lvNum.textContent=lv; lvNum2.textContent=lv;
-  lvXp.textContent=`${rest} / ${n} XP`;
-  totalXp.textContent=`${state.xp} XP total`;
-  badge.style.setProperty("--p",(rest/n*360)+"deg");
-  const st=streakDays(); streak.textContent = st===1 ? "1 day streak" : st+" day streak";
-
-  const keys=Object.keys(STATS);
-  const max=Math.max(200,...keys.map(k=>state.stats[k]))*1.1;
-  const cx=120,cy=104,R=78;
-  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/5;return [cx+Math.cos(a)*r,cy+Math.sin(a)*r];};
-  let g="";
-  [0.25,0.5,0.75,1].forEach(f=>{
-    const p=keys.map((_,i)=>pt(i,R*f).map(v=>v.toFixed(1)).join(",")).join(" ");
-    g+=`<polygon points="${p}" fill="none" stroke="${f===1?'var(--grid-strong)':'var(--grid)'}" stroke-width="1"/>`;
-  });
-  keys.forEach((_,i)=>{const [x,y]=pt(i,R);
-    g+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--grid)"/>`;});
-  const shape=keys.map((k,i)=>{
-    const r=R*Math.max(0.06,Math.min(1,state.stats[k]/max));
-    return pt(i,r).map(v=>v.toFixed(1)).join(",");
-  }).join(" ");
-  g+=`<polygon class="shape" points="${shape}" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round"/>`;
-  keys.forEach((k,i)=>{
-    const r=R*Math.max(0.06,Math.min(1,state.stats[k]/max)); const [px,py]=pt(i,r);
-    g+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3.4" fill="${sc(k)}"/>`;
-  });
-  keys.forEach((k,i)=>{const [x,y]=pt(i,R+21);
-    g+=`<text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="700"
-      fill="${sc(k)}" font-family="system-ui">${STATS[k].name}</text>`;});
-  radar.innerHTML=g;
-
-  stats.innerHTML=keys.map(k=>{
-    const xp=state.stats[k],pct=(xp%80)/80*100;
-    return `<div class="stat"><span class="dot" style="background:${sc(k)}"></span>
-      <span class="nm">${STATS[k].name}</span>
-      <span class="bar"><i style="width:${pct}%;background:${sc(k)}"></i></span>
-      <span class="xpv">${xp}xp</span>
-      <span class="lv" style="color:${sc(k)}">Lv.${statLv(xp)}</span></div>`;
-  }).join("");
-
-  if(char3d){
-    const topK=keys.reduce((a,b)=>state.stats[a]>=state.stats[b]?a:b);
-    char3d.tint(state.xp ? sc(topK) : (theme==="light"?"#5C7DFF":"#5227FF"));
-  }
-}
-
-function renderQuests(){
-  tabs.innerHTML=Object.keys(STATS).map(k=>{
-    const on=k===tab;
-    return `<button class="tab" role="tab" aria-selected="${on}" data-k="${k}"
-      style="${on?`background:${sc(k)}`:""}">${STATS[k].label}</button>`;
-  }).join("");
-  const c={}; state.log.forEach(l=>c[l.qid]=(c[l.qid]||0)+1);
-  quests.innerHTML=allQuests().filter(q=>q.stat===tab).map(q=>`
-    <div class="quest" style="--qc:${sc(q.stat)}">
-      <span class="q-nm">${q.name}</span>
-      <span class="q-count">${c[q.id]?"×"+c[q.id]:""}</span>
-      <span class="q-xp" style="color:${sc(q.stat)}">+${q.xp}</span>
-      <button class="add" data-q="${q.id}" aria-label="Log ${q.name}">＋</button>
-    </div>`).join("");
-}
-
-function renderLog(){
-  const t=today(), todays=state.log.filter(l=>l.d===t);
-  const sum=todays.reduce((a,b)=>a+b.xp,0);
-  todayXp.textContent=sum;
-  todayBar.style.width=Math.min(100,sum/DAILY_GOAL*100)+"%";
-  dateLabel.textContent=t.replace(/-/g,".");
-  log.innerHTML= todays.length
-    ? [...todays].reverse().map(l=>`<li><span class="t">${l.time}</span>
-        <span class="dot" style="background:${sc(l.stat)}"></span><span>${l.name}</span>
-        <span class="x" style="color:${sc(l.stat)}">+${l.xp}</span></li>`).join("")
-    : `<div class="empty">Nothing logged yet. Tap a quest above to start.</div>`;
-}
 function longestStreak(){
   const s=[...new Set(state.days)].sort(); if(!s.length) return 0;
   let best=1,run=1;
   for(let i=1;i<s.length;i++){
-    const prev=new Date(s[i-1]), cur=new Date(s[i]);
-    run = (cur-prev)/86400000===1 ? run+1 : 1;
+    run=((new Date(s[i])-new Date(s[i-1]))/86400000===1)?run+1:1;
     best=Math.max(best,run);
   }
   return best;
 }
-function renderStats(){
+
+/* ---------- rendering ---------- */
+function renderLevel(){
+  const {lv,rest,need:n}=levelOf(state.xp);
+  lvNum.textContent=lv; avLv.textContent=lv;
+  xpFill.style.width=Math.round(rest/n*100)+"%";
+  totalXp.textContent=state.xp;
+  const st=streakDays();
+  streakDot.hidden = st===0;
+  streakBtn.title = st===1 ? "1 day streak" : st+" day streak";
+}
+
+function renderRadar(){
+  const max=Math.max(120,...KEYS.map(k=>state.stats[k]))*1.12;
+  const cx=130,cy=121,R=84;
+  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/5;return [cx+Math.cos(a)*r,cy+Math.sin(a)*r];};
+  let g=`<defs><radialGradient id="rg" cx="50%" cy="50%" r="62%">
+      <stop offset="0%" stop-color="${RADAR[0]}" stop-opacity=".95"/>
+      <stop offset="46%" stop-color="${RADAR[1]}" stop-opacity=".85"/>
+      <stop offset="100%" stop-color="${RADAR[2]}" stop-opacity=".75"/>
+    </radialGradient></defs>`;
+  [0.25,0.5,0.75,1].forEach(f=>{
+    const p=KEYS.map((_,i)=>pt(i,R*f).map(v=>v.toFixed(1)).join(",")).join(" ");
+    g+=`<polygon points="${p}" fill="none" stroke="var(--line-2)" stroke-width="1.2"/>`;
+  });
+  KEYS.forEach((_,i)=>{const [x,y]=pt(i,R);
+    g+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--line)"/>`;});
+  const shape=KEYS.map((k,i)=>{
+    const r=R*Math.max(0.08,Math.min(1,state.stats[k]/max));
+    return pt(i,r).map(v=>v.toFixed(1)).join(",");
+  }).join(" ");
+  g+=`<polygon class="shape" points="${shape}" fill="url(#rg)" stroke="${RADAR[3]}"
+      stroke-width="2.6" stroke-linejoin="round"/>`;
+  KEYS.forEach((k,i)=>{
+    const r=R*Math.max(0.08,Math.min(1,state.stats[k]/max)); const [px,py]=pt(i,r);
+    g+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="4" fill="${sc(k)}"
+        stroke="#fff" stroke-width="1.6"/>`;
+  });
+  KEYS.forEach((k,i)=>{
+    const [x,y]=pt(i,R+27);
+    g+=`<text x="${x.toFixed(1)}" y="${(y-2).toFixed(1)}" text-anchor="middle"
+        font-size="13" font-weight="900" fill="var(--ink)"
+        font-family="Nunito, system-ui">${k}</text>`;
+    g+=`<text x="${x.toFixed(1)}" y="${(y+14).toFixed(1)}" text-anchor="middle"
+        font-size="14">${STATS[k].emo}</text>`;
+  });
+  radar.innerHTML=g;
+
+  stats.innerHTML=KEYS.map(k=>{
+    const xp=state.stats[k], pct=(xp%80)/80*100;
+    return `<div class="stat">
+      <span class="chip" style="background:${sc(k)}22">${STATS[k].emo}</span>
+      <span class="nm" style="color:${sc(k)}">${k}</span>
+      <span class="bar"><i style="width:${pct}%;background:${sc(k)}"></i></span>
+      <span class="lv" style="color:${sc(k)}">Lv.${statLv(xp)}</span></div>`;
+  }).join("");
+
+  if(char3d){
+    const top=KEYS.reduce((a,b)=>state.stats[a]>=state.stats[b]?a:b);
+    char3d.tint(state.xp ? sc(top) : THEMES[themeName].stats.INT);
+  }
+}
+
+function renderQuests(){
+  tabs.innerHTML=KEYS.map(k=>{
+    const on=k===tab;
+    return `<button class="tab" role="tab" aria-selected="${on}" data-k="${k}"
+      style="${on?`background:${sc(k)}`:""}">${STATS[k].emo} ${k}</button>`;
+  }).join("");
+  const c={}; state.log.forEach(l=>c[l.qid]=(c[l.qid]||0)+1);
+  const f=filter.trim().toLowerCase();
+  const list=allQuests().filter(q=>f ? q.name.toLowerCase().includes(f) : q.stat===tab);
+  questList.innerHTML = list.length ? list.map(q=>`
+    <div class="quest">
+      <button class="tick" data-q="${q.id}" aria-label="Log ${q.name}">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+      </button>
+      <span class="q-emo">${q.emo||STATS[q.stat].emo}</span>
+      <span class="q-nm">${q.name}</span>
+      <span class="q-count">${c[q.id]?"×"+c[q.id]:""}</span>
+      <span class="q-xp" style="color:${sc(q.stat)};background:${sc(q.stat)}22">+${q.xp}</span>
+    </div>`).join("")
+    : `<div class="empty">No quests match “${filter}”.</div>`;
+}
+
+function renderWeek(){
   const iso=d=>d.toISOString().slice(0,10);
   const per=[...Array(7)].map((_,i)=>{
     const d=new Date(); d.setDate(d.getDate()-(6-i));
     const t=iso(d), e=state.log.filter(l=>l.d===t), by={};
     e.forEach(l=>by[l.stat]=(by[l.stat]||0)+l.xp);
-    return {d, total:e.reduce((a,b)=>a+b.xp,0), by};
+    return {d,total:e.reduce((a,b)=>a+b.xp,0),by};
   });
-  const max=Math.max(DAILY_GOAL,...per.map(p=>p.total)), H=104;
+  const max=Math.max(DAILY_GOAL,...per.map(p=>p.total)), H=96;
   const DAY=["S","M","T","W","T","F","S"];
-  const goalPx = 19 + Math.min(H, DAILY_GOAL/max*H);
-  week.innerHTML=per.map((p,idx)=>{
-    const h=Math.max(4, p.total/max*H);
-    const segs=Object.keys(STATS).filter(k=>p.by[k])
+  weekChart.innerHTML=per.map((p,idx)=>{
+    const h=Math.max(6,p.total/max*H);
+    const segs=KEYS.filter(k=>p.by[k])
       .map(k=>`<i style="height:${(p.by[k]/p.total*100).toFixed(1)}%;background:${sc(k)}"></i>`).join("");
     return `<div class="col${idx===6?" today":""}"><span class="v">${p.total||""}</span>
       <div class="stack" style="height:${h.toFixed(0)}px">${segs}</div>
       <span class="d">${DAY[p.d.getDay()]}</span></div>`;
   }).join("");
-  const wrap=week.parentElement;
-  let g=wrap.querySelector(".goal");
-  if(!g){ g=document.createElement("div"); g.className="goal";
-    g.innerHTML=`<span>GOAL ${DAILY_GOAL}</span>`; wrap.appendChild(g); }
-  g.style.bottom=goalPx.toFixed(0)+"px";
+}
 
+function renderKpis(){
   const best=state.log.reduce((m,l)=>{ m[l.d]=(m[l.d]||0)+l.xp; return m; },{});
   const bestDay=Math.max(0,...Object.values(best));
-  const top=Object.keys(STATS).reduce((a,b)=>state.stats[a]>=state.stats[b]?a:b);
-  kpis.innerHTML=[
-    [state.xp,"Total XP"],
-    [state.log.length,"Entries logged"],
+  const t=today(), todayXp=state.log.filter(l=>l.d===t).reduce((a,b)=>a+b.xp,0);
+  const top=KEYS.reduce((a,b)=>state.stats[a]>=state.stats[b]?a:b);
+  kpiGrid.innerHTML=[
+    [todayXp+" / "+DAILY_GOAL,"Today"],
+    [streakDays(),"Day streak"],
+    [state.log.length,"Quests logged"],
     [new Set(state.days).size,"Active days"],
-    [longestStreak(),"Longest streak"],
     [bestDay,"Best single day"],
-    [state.xp?STATS[top].name:"—","Strongest stat"]
+    [state.xp?STATS[top].name:"—","Strongest"]
   ].map(([v,l])=>`<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join("");
-
-  const c={}; state.log.forEach(l=>{ c[l.name]=c[l.name]||{n:0,stat:l.stat}; c[l.name].n++; });
-  const rows=Object.entries(c).sort((a,b)=>b[1].n-a[1].n).slice(0,6);
-  topq.innerHTML=rows.length
-    ? rows.map(([nm,o],i)=>`<div class="rank"><span class="n">${i+1}</span>
-        <span class="dot" style="background:${sc(o.stat)}"></span><span>${nm}</span>
-        <span class="c" style="color:${sc(o.stat)}">×${o.n}</span></div>`).join("")
-    : `<div class="empty">No history yet.</div>`;
 }
-function renderAll(){ renderChar(); renderQuests(); renderLog(); renderStats(); }
 
+function renderTop(){
+  const c={}; state.log.forEach(l=>{ c[l.name]=c[l.name]||{n:0,stat:l.stat,emo:l.emo}; c[l.name].n++; });
+  const rows=Object.entries(c).sort((a,b)=>b[1].n-a[1].n).slice(0,6);
+  topList.innerHTML=rows.length
+    ? rows.map(([nm,o],i)=>`<div class="rank">
+        <span class="medal" style="background:${sc(o.stat)}22">${o.emo||STATS[o.stat].emo}</span>
+        <span>${nm}</span>
+        <span class="c" style="color:${sc(o.stat)}">×${o.n}</span></div>`).join("")
+    : `<div class="empty">Nothing logged yet — tick a quest to begin.</div>`;
+}
+function renderAll(){ renderLevel(); renderRadar(); renderQuests(); renderWeek(); renderKpis(); renderTop(); }
+
+/* ---------- feedback ---------- */
+const STILL = matchMedia("(prefers-reduced-motion:reduce)").matches;
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("on");
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("on"),2000); }
-function floatXp(el,txt,color){ const r=el.getBoundingClientRect(); const s=document.createElement("div");
-  s.className="float"; s.textContent=txt; s.style.color=color; s.style.left=r.left+"px"; s.style.top=(r.top-6)+"px";
-  document.body.appendChild(s); setTimeout(()=>s.remove(),900); }
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("on"),2100); }
+function floatXp(el,txt,color){ if(STILL) return;
+  const r=el.getBoundingClientRect(), s=document.createElement("div");
+  s.className="float"; s.textContent=txt; s.style.color=color;
+  s.style.left=r.left+"px"; s.style.top=(r.top-6)+"px";
+  document.body.appendChild(s); setTimeout(()=>s.remove(),950); }
+function burst(el,strong){
+  if(STILL||!el) return;
+  const r=el.getBoundingClientRect(), n=strong?22:10;
+  const cols=["#2FBFA8","#FF8FA3","#FFC94D","#A99CF0"];
+  for(let i=0;i<n;i++){
+    const s=document.createElement("i"); s.className="spark";
+    const a=Math.PI*2*i/n+Math.random()*0.4, d=(strong?70:38)+Math.random()*(strong?80:34);
+    s.style.setProperty("--dx",(Math.cos(a)*d).toFixed(1)+"px");
+    s.style.setProperty("--dy",(Math.sin(a)*d-14).toFixed(1)+"px");
+    s.style.left=(r.left+r.width/2)+"px"; s.style.top=(r.top+r.height/2)+"px";
+    s.style.background=cols[i%cols.length];
+    s.style.animationDelay=(Math.random()*0.06).toFixed(3)+"s";
+    document.body.appendChild(s); setTimeout(()=>s.remove(),1000);
+  }
+}
 
 function logQuest(q,el){
   const before=levelOf(state.xp).lv, d=new Date();
   state.xp+=q.xp; state.stats[q.stat]+=q.xp;
-  state.log.push({qid:q.id,name:q.name,stat:q.stat,xp:q.xp,d:today(),
+  state.log.push({qid:q.id,name:q.name,stat:q.stat,xp:q.xp,emo:q.emo,d:today(),
     time:String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")});
   if(!state.days.includes(today())) state.days.push(today());
   renderAll(); save();
   if(el) floatXp(el,"+"+q.xp,sc(q.stat));
   if(navigator.vibrate) navigator.vibrate(12);
   const after=levelOf(state.xp).lv;
-  if(after>before) toast(`LEVEL UP  Lv.${after}`);
+  if(char3d) char3d.pop(after>before?1.6:1);
+  if(after>before){
+    toast(`LEVEL UP · Lv.${after}`);
+    burst(document.getElementById("avatarBtn"),true);
+    if(navigator.vibrate) navigator.vibrate([18,60,28]);
+  } else if(el) burst(el,false);
 }
 
-tabs.addEventListener("click",e=>{const b=e.target.closest(".tab"); if(!b)return; tab=b.dataset.k; renderQuests();});
-quests.addEventListener("click",e=>{const b=e.target.closest(".add"); if(!b)return;
-  const q=allQuests().find(x=>x.id===b.dataset.q); if(q) logQuest(q,b);});
-document.getElementById("themeBtn").addEventListener("click",async()=>{
-  theme = theme==="light" ? "dark" : "light";
-  applyTheme(); renderAll();
-  try{ await store.set(TKEY,theme); }catch(e){}
+/* ---------- wiring ---------- */
+tabs.addEventListener("click",e=>{const b=e.target.closest(".tab"); if(!b)return;
+  tab=b.dataset.k; filter=""; q.value=""; renderQuests();});
+questList.addEventListener("click",e=>{const b=e.target.closest(".tick"); if(!b)return;
+  const item=allQuests().find(x=>x.id===b.dataset.q); if(item) logQuest(item,b);});
+q.addEventListener("input",()=>{ filter=q.value; renderQuests(); });
+themeBtn.addEventListener("click",()=>{
+  mode = currentMode()==="dark" ? "light" : "dark";
+  applyDesign(); renderAll(); saveDesign();
 });
+
+/* ---------- design page ---------- */
+const showDesign=(on)=>{
+  document.getElementById("design").hidden=!on;
+  document.querySelectorAll("main > .grid, main > .sub, main > #top, main > .levelrow")
+    .forEach(el=>el.hidden=on);
+  designBtn.setAttribute("aria-current",on?"true":"false");
+  if(on) document.getElementById("design").scrollIntoView({block:"start"});
+};
+designBtn.addEventListener("click",()=>showDesign(document.getElementById("design").hidden));
+themeGrid.addEventListener("click",e=>{ const b=e.target.closest(".theme"); if(!b) return;
+  themeName=b.dataset.t; applyDesign(); renderAll(); saveDesign();
+  toast(THEMES[themeName].name+" applied");
+});
+modeSegs.addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return;
+  mode=b.dataset.mode; applyDesign(); renderAll(); saveDesign(); });
+spinSegs.addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return;
+  spin=b.dataset.spin==="on"; applyDesign(); saveDesign(); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>{
+  if(mode==="system"){ applyDesign(); renderAll(); } });
+renderThemes();
 qAdd.addEventListener("click",()=>{
   const nm=qName.value.trim(), st=qStat.value;
   const xp=Math.max(1,Math.min(200,parseInt(qXp.value)||10));
   if(!nm){ toast("Name your quest first"); return; }
-  state.custom.push({id:"c"+Date.now(),stat:st,name:nm,xp});
-  qName.value=""; tab=st; renderQuests(); save();
+  state.custom.push({id:"c"+Date.now(),stat:st,name:nm,xp,emo:"⭐"});
+  qName.value=""; tab=st; filter=""; q.value=""; renderQuests(); save();
+  toast("Quest added");
 });
-undo.addEventListener("click",()=>{
+const doUndo=()=>{
   const last=state.log.pop();
   if(!last){ toast("Nothing to undo"); return; }
   state.xp-=last.xp; state.stats[last.stat]-=last.xp;
   if(!state.log.some(l=>l.d===last.d)) state.days=state.days.filter(d=>d!==last.d);
-  renderAll(); save(); toast(`Undone · ${last.name}`);
-});
-reset.addEventListener("click",()=>{
+  renderAll(); save(); toast("Undone · "+last.name);
+};
+const doReset=()=>{
   if(!confirm("This clears every entry and all stats. Continue?")) return;
-  state={xp:0,stats:{INT:0,VIT:0,EXP:0,SOC:0,CRE:0},log:[],custom:[],days:[]};
-  renderAll(); save();
+  state=blank(); renderAll(); save(); toast("Reset");
+};
+undoBtn.addEventListener("click",doUndo);
+undo2.addEventListener("click",doUndo);
+resetBtn.addEventListener("click",doReset);
+reset2.addEventListener("click",doReset);
+streakBtn.addEventListener("click",()=>{
+  const s=streakDays();
+  toast(s ? `${s} day streak · longest ${longestStreak()}` : "No streak yet — log a quest today");
 });
-const dots=[...document.querySelectorAll(".dot-n")];
-dots.forEach(d=>d.addEventListener("click",()=>{
-  pager.scrollTo({left: pager.clientWidth*(+d.dataset.p), behavior:"smooth"});
+avatarBtn.addEventListener("click",()=>{
+  const {lv,rest,need:n}=levelOf(state.xp);
+  toast(`Lv.${lv} · ${rest} / ${n} XP to next`);
+});
+[...document.querySelectorAll(".rbtn[data-goto]")].forEach(b=>b.addEventListener("click",()=>{
+  const t=document.getElementById(b.dataset.goto);
+  if(t) t.scrollIntoView({behavior:STILL?"auto":"smooth",block:"start"});
 }));
-pager.addEventListener("scroll",()=>{
-  const i=Math.round(pager.scrollLeft/pager.clientWidth);
-  dots.forEach((d,n)=>d.setAttribute("aria-current", n===i ? "true":"false"));
-},{passive:true});
 
-qStat.innerHTML=Object.keys(STATS).map(k=>`<option value="${k}">${STATS[k].label}</option>`).join("");
+qStat.innerHTML=KEYS.map(k=>`<option value="${k}">${STATS[k].emo} ${STATS[k].name}</option>`).join("");
 
-cardFX = initCards();
 char3d = initCharacter();
 (function(){
   const t0=performance.now(); let raf=0;
-  const frame=t=>{ const sec=(t-t0)*0.001;
-    if(cardFX) cardFX.draw(sec);
-    if(char3d) char3d.draw(sec);
-    if(!STILL) raf=requestAnimationFrame(frame); };
+  const frame=t=>{ if(char3d) char3d.draw((t-t0)*0.001); raf=requestAnimationFrame(frame); };
   const start=()=>{ if(!raf) raf=requestAnimationFrame(frame); };
   const stop=()=>{ cancelAnimationFrame(raf); raf=0; };
   document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
